@@ -13,3 +13,9 @@ Vercel's serverless egress makes reaching internal-only systems (VPC-only databa
 
 ## 4. No joint SLA
 Five independent SaaS dependencies multiply failure modes: an outage in Clerk (login), Neon, Inngest, or Vercel takes the tools down, and no vendor owes a combined SLA. Power Apps concentrates that risk in a single Microsoft SLA.
+
+## 5. Tamper-proof audit logs (low relevance — mitigable in-app)
+Neon is plain Postgres: anyone with admin DB access (or a compromised credential) could `UPDATE`/`DELETE` audit rows and erase evidence of an action (e.g. approve a fraudulent refund, then edit the log). Dataverse auditing is tamper-resistant by design. Mitigation is cheap but must be deliberate: the app only INSERTs into `audit_log`, UPDATE/DELETE revoked at the DB-role level, and periodic export to write-once storage (e.g. S3 object lock) so even a DB admin cannot rewrite history.
+
+## 6. Governance / DLP tooling (low relevance at this scale)
+Power Apps' admin center gives IT a central view of every app, its users, and policy control over data flows (DLP — e.g. block connecting CRM data to personal storage). Our stack has no equivalent. With 3 apps owned by one engineering team, git + code review effectively is the governance; this only becomes a real gap if many teams start building tools without central oversight.
