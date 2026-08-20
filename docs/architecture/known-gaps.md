@@ -19,3 +19,10 @@ Neon is plain Postgres: anyone with admin DB access (or a compromised credential
 
 ## 6. Governance / DLP tooling (low relevance at this scale)
 Power Apps' admin center gives IT a central view of every app, its users, and policy control over data flows (DLP — e.g. block connecting CRM data to personal storage). Our stack has no equivalent. With 3 apps owned by one engineering team, git + code review effectively is the governance; this only becomes a real gap if many teams start building tools without central oversight.
+
+## 7. No non-engineer self-service
+Power Apps' core pitch is that non-engineers can build and modify apps themselves. In a built platform every change goes through engineering. Chosen mitigations:
+- **Config-over-code**: the things ops/compliance staff actually change frequently (approval thresholds, SLA windows, queue statuses, role assignments) live as data editable in an admin UI, not code — removing engineering from ~80% of realistic change requests.
+- **Devin as the change interface**: remaining changes are filed in plain English (Slack/ticket), Devin turns them into PRs, engineers only review — collapsing turnaround from "sprint ticket" to "same-day PR" and showcasing how the team streamlines the engineering that remains.
+
+Rejected: embedding a form/view builder (JSON-schema-driven UIs) — that path incrementally rebuilds Power Apps itself.
