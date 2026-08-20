@@ -9,5 +9,6 @@ Documentation for the Cognition take-home assignment: evaluating whether a Serie
 - [`architecture/`](architecture/) — system design
   - [`components.md`](architecture/components.md) — initial component breakdown of the platform
   - [`target-components.md`](architecture/target-components.md) — agreed target components, stack mapping, and build order
+  - [`web-architecture.md`](architecture/web-architecture.md) — decision record: single Next.js app + domain packages (options A–D compared)
   - [`known-gaps.md`](architecture/known-gaps.md) — accepted gaps of the chosen stack vs. Power Apps, with mitigations
 - [`evaluation/`](evaluation/) — honest assessment of what was/wasn't replicated, gap analysis, and the build-vs-buy recommendation
