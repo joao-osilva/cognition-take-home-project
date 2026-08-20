@@ -36,8 +36,11 @@ pnpm dev                  # http://localhost:3000
 Auth is Clerk: sign in at `/sign-in`. Roles live in Clerk `publicMetadata.roles`
 (e.g. `["kyc:operator"]`); the `platform.users` mirror table is synced via the
 `/api/webhooks/clerk` webhook (and refreshed on read in local dev). Demo users
-(`alex@fintech.dev`, `kim@`, `kate@`, `remy@`, `rosa@`, `finn@`, `faye@`) map to
-the seeded dataset via Clerk `external_id`.
+(`alex+clerk_test@fintech.dev`, `kim+clerk_test@`, `kate+clerk_test@`,
+`remy+clerk_test@`, `rosa+clerk_test@`, `finn+clerk_test@`, `faye+clerk_test@`)
+map to the seeded dataset via Clerk `external_id`. The `+clerk_test` suffix
+marks them as Clerk test users, so the new-device verification code is always
+`424242`.
 
 ## Commands
 
