@@ -124,40 +124,53 @@ async function main() {
     ]),
   );
 
-  await db.insert(refundRequests).values([
-    {
-      transactionId: at(insertedTransactions, 0).id,
-      amount: 12550,
-      currency: "USD",
-      reason: "Duplicate charge",
-      status: "processed",
-      requestedBy: "user-ref-op",
-    },
-    {
-      transactionId: at(insertedTransactions, 3).id,
-      amount: 260000,
-      currency: "USD",
-      reason: "Service not delivered",
-      status: "pending_approval",
-      requestedBy: "user-ref-op",
-    },
-    {
-      transactionId: at(insertedTransactions, 5).id,
-      amount: 90000,
-      currency: "USD",
-      reason: "Customer dispute resolved in their favor",
-      status: "requested",
-      requestedBy: "user-ref-op",
-    },
-    {
-      transactionId: at(insertedTransactions, 7).id,
-      amount: 280000,
-      currency: "USD",
-      reason: "Chargeback pre-emption",
-      status: "rejected",
-      requestedBy: "user-ref-op",
-    },
-  ]);
+  const insertedRefunds = await db
+    .insert(refundRequests)
+    .values([
+      {
+        transactionId: at(insertedTransactions, 0).id,
+        amount: 12550,
+        currency: "USD",
+        reason: "Duplicate charge",
+        status: "processed",
+        requestedBy: "user-ref-op",
+      },
+      {
+        transactionId: at(insertedTransactions, 3).id,
+        amount: 260000,
+        currency: "USD",
+        reason: "Service not delivered",
+        status: "pending_approval",
+        requestedBy: "user-ref-op",
+      },
+      {
+        transactionId: at(insertedTransactions, 5).id,
+        amount: 90000,
+        currency: "USD",
+        reason: "Customer dispute resolved in their favor",
+        status: "requested",
+        requestedBy: "user-ref-op",
+      },
+      {
+        transactionId: at(insertedTransactions, 7).id,
+        amount: 280000,
+        currency: "USD",
+        reason: "Chargeback pre-emption",
+        status: "rejected",
+        requestedBy: "user-ref-op",
+      },
+    ])
+    .returning();
+
+  const pendingRefund = insertedRefunds.find((r) => r.status === "pending_approval");
+  if (pendingRefund) {
+    await db.insert(approvals).values({
+      entityType: "refund_request",
+      entityId: pendingRefund.id,
+      requestedBy: pendingRefund.requestedBy,
+      ruleSnapshot: { threshold: 100000, amount: pendingRefund.amount },
+    });
+  }
 
   const flagDefs = [
     { key: "new-onboarding-flow", description: "Revamped onboarding wizard" },

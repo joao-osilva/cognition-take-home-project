@@ -31,8 +31,13 @@ export function ReasonDialog({
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
 
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) setReason("");
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
