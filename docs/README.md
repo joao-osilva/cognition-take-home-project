@@ -6,5 +6,8 @@ Documentation for the Cognition take-home assignment: evaluating whether a Serie
 
 - [`research/`](research/) — background research
   - [`power-apps-research.md`](research/power-apps-research.md) — deep dive on Power Apps capabilities, licensing, governance, and limitations
-- [`architecture/`](architecture/) — the 1-page architecture document for the prototype (key decisions and tradeoffs)
+- [`architecture/`](architecture/) — system design
+  - [`components.md`](architecture/components.md) — initial component breakdown of the platform
+  - [`target-components.md`](architecture/target-components.md) — agreed target components, stack mapping, and build order
+  - [`known-gaps.md`](architecture/known-gaps.md) — accepted gaps of the chosen stack vs. Power Apps, with mitigations
 - [`evaluation/`](evaluation/) — honest assessment of what was/wasn't replicated, gap analysis, and the build-vs-buy recommendation
