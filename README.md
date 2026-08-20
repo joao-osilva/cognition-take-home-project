@@ -27,11 +27,17 @@ tooling/generators/app/   # pnpm gen:app <id>
 
 ```bash
 pnpm install
-cp .env.example .env      # set DATABASE_URL (Neon)
+cp .env.example apps/web/.env.local  # set DATABASE_URL + Clerk keys
 pnpm db:migrate           # apply migrations
 pnpm db:seed              # demo dataset
 pnpm dev                  # http://localhost:3000
 ```
+
+Auth is Clerk: sign in at `/sign-in`. Roles live in Clerk `publicMetadata.roles`
+(e.g. `["kyc:operator"]`); the `platform.users` mirror table is synced via the
+`/api/webhooks/clerk` webhook (and refreshed on read in local dev). Demo users
+(`alex@fintech.dev`, `kim@`, `kate@`, `remy@`, `rosa@`, `finn@`, `faye@`) map to
+the seeded dataset via Clerk `external_id`.
 
 ## Commands
 

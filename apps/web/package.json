@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.8.0",
     "@repo/app-flags": "workspace:*",
     "@repo/app-kyc": "workspace:*",
     "@repo/app-refunds": "workspace:*",
