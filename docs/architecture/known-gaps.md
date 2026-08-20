@@ -26,3 +26,6 @@ Power Apps' core pitch is that non-engineers can build and modify apps themselve
 - **Devin as the change interface**: remaining changes are filed in plain English (Slack/ticket), Devin turns them into PRs, engineers only review — collapsing turnaround from "sprint ticket" to "same-day PR" and showcasing how the team streamlines the engineering that remains.
 
 Rejected: embedding a form/view builder (JSON-schema-driven UIs) — that path incrementally rebuilds Power Apps itself.
+
+## 8. Slack / email notification delivery (future improvement)
+Notifications are in-app only (bell + unread count backed by a `notifications` table). Power Apps delivers via Outlook/Teams connectors out of the box. External delivery (Slack webhook, email via Resend/SES) is deferred: the event pipeline (Inngest) and notification records already exist, so adding a delivery channel later is a small, isolated change.

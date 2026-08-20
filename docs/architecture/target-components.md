@@ -15,7 +15,7 @@ Chosen stack: **Next.js on Vercel** (API routes), **NeonDB** (Postgres), **Clerk
 | 7 | Web UI | **Build** | Next.js + shadcn | Shared shell (nav, session, role-aware rendering) + component kit (data table w/ filters, detail panel, action-with-reason modal, status badges, metric cards); new tools become composition |
 | 8 | Feature-flag store | **Build** | NeonDB | Panel owns flags (per-environment state, history); read API for consuming apps; swap for LaunchDarkly later if ever needed |
 | 9 | KYC document storage | 3rd-party | Vercel Blob | Real doc storage instead of mocks |
-| 10 | Notifications | Mock (for now) | Inngest events → console stub | Interface in place; wiring Slack/email later is trivial and adds no demo value now |
+| 10 | Notifications | **Build (in-app)** | NeonDB + Inngest + shadcn | `notifications` table (recipient, type, payload, read_at) written on approval/flag events; bell + unread count in the shared shell. Slack/email delivery deferred (see known-gaps #8) |
 | 11 | Admin / config UI | **Build** | Next.js + shadcn | Config-over-code: approval thresholds, SLA windows, queue statuses, role assignments editable as data — the primary non-engineer self-service mitigation (see known-gaps #7) |
 | 12 | Hosting / CI | 3rd-party | Vercel | Deploys + per-PR preview envs (pairs with Neon branching); CI via GitHub Actions |
 
