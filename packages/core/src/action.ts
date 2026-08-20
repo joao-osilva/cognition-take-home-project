@@ -32,3 +32,16 @@ export function defineAction<Schema extends z.ZodTypeAny, Result>(
     return result;
   };
 }
+
+// Shape server-action wrappers return to client components (errors as data,
+// since thrown errors don't cross the server-action boundary with messages).
+export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export async function toActionResult(promise: Promise<unknown>): Promise<ActionResult> {
+  try {
+    await promise;
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
+  }
+}

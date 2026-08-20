@@ -1,4 +1,10 @@
 {
   "extends": "@repo/config/tsconfig/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/ui/*": ["./src/*"]
+    }
+  },
   "include": ["src"]
 }

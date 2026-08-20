@@ -30,6 +30,10 @@ Rules every change (human- or AI-authored) must follow. Design rationale lives i
 
 - Scaffold with `pnpm gen:app <id>`, then follow the printed next steps. Do not hand-create app packages.
 
+## UI
+
+- The design system is shadcn/ui. Shared components live in `packages/ui`; add new primitives there via the shadcn CLI. Apps import from `@repo/ui` — never install UI primitives inside an app package.
+
 ## General
 
 - Update the relevant doc in `docs/` in the same PR as the change it describes.

@@ -1,27 +1,38 @@
 import Link from "next/link";
 
 import { hasRole } from "@repo/core";
-import { Card } from "@repo/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, PageHeader } from "@repo/ui";
 
-import { getActor } from "@/lib/actor";
+import { getPersona } from "@/lib/actor";
 import { apps } from "@/lib/apps";
 
 export default async function HomePage() {
-  const actor = await getActor();
-  const visibleApps = apps.filter((app) => hasRole(actor, app.requiredRole));
+  const persona = await getPersona();
+  const visibleApps = apps.filter((app) => hasRole(persona, app.requiredRole));
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold">Apps</h1>
+      <PageHeader
+        title={`Welcome, ${persona.name.split(" ")[0]}`}
+        description="Tools available to your role"
+      />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleApps.map((app) => (
           <Link key={app.id} href={app.basePath}>
             <Card className="h-full transition-shadow hover:shadow-md">
-              <h2 className="mb-1 font-medium">{app.name}</h2>
-              <p className="text-sm text-zinc-500">{app.description}</p>
+              <CardHeader>
+                <CardTitle>{app.name}</CardTitle>
+                <CardDescription>{app.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="text-muted-foreground text-sm">Open →</CardContent>
             </Card>
           </Link>
         ))}
+        {visibleApps.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            Your role has no app access. Switch persona in the sidebar to explore.
+          </p>
+        ) : null}
       </div>
     </div>
   );
