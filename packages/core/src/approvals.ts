@@ -1,4 +1,4 @@
-import { eq } from "@repo/db/orm";
+import { and, eq, isNull } from "@repo/db/orm";
 
 import { platformSchema, type Db } from "@repo/db";
 
@@ -12,9 +12,9 @@ export interface ApprovableEntity {
 export interface ApprovalPolicy<T extends ApprovableEntity> {
   entityType: string;
   needsApproval: (entity: T, config: ConfigReader) => Promise<boolean> | boolean;
-  canDecide: (actor: Actor, entity: T) => boolean;
-  onApproved: (db: Db, entity: T) => Promise<void>;
-  onRejected: (db: Db, entity: T) => Promise<void>;
+  canDecide: (actor: Actor, entity: T, requestedBy: string) => boolean;
+  onApproved: (db: Db, entity: T, ruleSnapshot: Record<string, unknown> | null) => Promise<void>;
+  onRejected: (db: Db, entity: T, ruleSnapshot: Record<string, unknown> | null) => Promise<void>;
   loadEntity: (db: Db, entityId: string) => Promise<T | undefined>;
 }
 
@@ -75,7 +75,7 @@ export async function decideApproval<T extends ApprovableEntity>(
   const entity = await policy.loadEntity(db, approval.entityId);
   if (!entity) throw new Error(`Entity ${approval.entityId} not found`);
 
-  if (!policy.canDecide(actor, entity)) {
+  if (!policy.canDecide(actor, entity, approval.requestedBy)) {
     throw new ForbiddenError(`Actor ${actor.id} cannot decide this approval`);
   }
 
@@ -84,10 +84,11 @@ export async function decideApproval<T extends ApprovableEntity>(
     .set({ decidedBy: actor.id, decision, reason, decidedAt: new Date() })
     .where(eq(platformSchema.approvals.id, approvalId));
 
+  const ruleSnapshot = (approval.ruleSnapshot ?? null) as Record<string, unknown> | null;
   if (decision === "approved") {
-    await policy.onApproved(db, entity);
+    await policy.onApproved(db, entity, ruleSnapshot);
   } else {
-    await policy.onRejected(db, entity);
+    await policy.onRejected(db, entity, ruleSnapshot);
   }
 
   await writeAudit(db, actor, {
@@ -96,4 +97,25 @@ export async function decideApproval<T extends ApprovableEntity>(
     entityId: approval.entityId,
     metadata: { reason },
   });
+}
+
+export type ApprovalRow = typeof platformSchema.approvals.$inferSelect;
+
+export async function getPendingApproval(
+  db: Db,
+  entityType: string,
+  entityId: string,
+): Promise<ApprovalRow | undefined> {
+  const rows = await db
+    .select()
+    .from(platformSchema.approvals)
+    .where(
+      and(
+        eq(platformSchema.approvals.entityType, entityType),
+        eq(platformSchema.approvals.entityId, entityId),
+        isNull(platformSchema.approvals.decision),
+      ),
+    )
+    .limit(1);
+  return rows[0];
 }

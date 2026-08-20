@@ -1,10 +1,3 @@
-import { Card, PageHeader } from "@repo/ui";
-
-export function KycQueueScreen() {
-  return (
-    <div>
-      <PageHeader title="KYC Review Queue" />
-      <Card>Queue implementation coming next: case list, filters, claim/decide actions.</Card>
-    </div>
-  );
-}
+export { KycQueueScreen } from "./queue";
+export { KycCaseScreen } from "./case-detail";
+export type { KycCaseActions } from "./case-actions";
