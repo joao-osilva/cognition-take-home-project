@@ -1,9 +1,20 @@
 import type { ReactNode } from "react";
 
-export function PageHeader({ title, actions }: { title: string; actions?: ReactNode }) {
+export function PageHeader({
+  title,
+  description,
+  actions,
+}: {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+}) {
   return (
-    <div className="mb-6 flex items-center justify-between">
-      <h1 className="text-2xl font-semibold text-zinc-900">{title}</h1>
+    <div className="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        {description ? <p className="text-muted-foreground mt-1 text-sm">{description}</p> : null}
+      </div>
       {actions}
     </div>
   );

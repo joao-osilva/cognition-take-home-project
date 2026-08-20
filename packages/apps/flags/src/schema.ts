@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm";
-import { check, integer, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { sql } from "@repo/db/orm";
+import { check, integer, pgTable, text, timestamp, uniqueIndex, uuid } from "@repo/db/pg-core";
 
 export const featureFlags = pgTable(
   "feature_flags",

@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm";
-import { check, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { sql } from "@repo/db/orm";
+import { check, pgTable, text, timestamp, uuid } from "@repo/db/pg-core";
 
 import { customers } from "@repo/db/schema/core";
 

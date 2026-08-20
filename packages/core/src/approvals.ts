@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq } from "@repo/db/orm";
 
 import { platformSchema, type Db } from "@repo/db";
 
