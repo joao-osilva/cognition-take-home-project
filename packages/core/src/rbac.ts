@@ -7,6 +7,20 @@ export type Role =
   | "flags:approver"
   | "admin";
 
+export const ALL_ROLES: readonly Role[] = [
+  "kyc:operator",
+  "kyc:approver",
+  "refunds:operator",
+  "refunds:approver",
+  "flags:operator",
+  "flags:approver",
+  "admin",
+];
+
+export function isRole(value: unknown): value is Role {
+  return typeof value === "string" && (ALL_ROLES as readonly string[]).includes(value);
+}
+
 export interface Actor {
   id: string;
   roles: Role[];

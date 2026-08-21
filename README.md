@@ -42,6 +42,12 @@ map to the seeded dataset via Clerk `external_id`. The `+clerk_test` suffix
 marks them as Clerk test users, so the new-device verification code is always
 `424242`.
 
+Admins manage everything in-app at `/admin`: assign roles (written back to
+Clerk `publicMetadata.roles`) and edit platform config (thresholds, SLAs).
+New sign-ups default to `admin` (demo convenience — see
+`apps/web/lib/default-roles.ts` to tighten), so no Clerk-dashboard
+bootstrapping is needed.
+
 ## Commands
 
 | Command                                      | What                                      |
