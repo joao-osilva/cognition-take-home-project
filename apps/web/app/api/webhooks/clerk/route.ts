@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import { removeUser, upsertUser } from "@repo/core";
 
 import { getDb } from "@/lib/db";
+import { assignDefaultRoles } from "@/lib/default-roles";
 
 // Keeps the platform `users` mirror table in sync with Clerk so FKs and audit
 // joins work without API calls. Roles stay in Clerk publicMetadata.
@@ -23,6 +24,10 @@ export async function POST(req: NextRequest) {
     const email = email_addresses[0]?.email_address ?? "";
     const name = [first_name, last_name].filter(Boolean).join(" ") || email;
     await upsertUser(db, { id: external_id ?? id, email, name });
+
+    if (evt.type === "user.created" && !Array.isArray(evt.data.public_metadata?.["roles"])) {
+      await assignDefaultRoles(id);
+    }
   }
 
   if (evt.type === "user.deleted" && evt.data.id) {

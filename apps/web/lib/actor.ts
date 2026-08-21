@@ -4,6 +4,7 @@ import { cache } from "react";
 import { isRole, upsertUser, type Actor } from "@repo/core";
 
 import { getDb } from "@/lib/db";
+import { assignDefaultRoles } from "@/lib/default-roles";
 
 export interface SessionUser extends Actor {
   name: string;
@@ -19,7 +20,10 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   if (!user) return null;
 
   const rawRoles = user.publicMetadata["roles"];
-  const roles = Array.isArray(rawRoles) ? rawRoles.filter(isRole) : [];
+  let roles = Array.isArray(rawRoles) ? rawRoles.filter(isRole) : [];
+  // Users with no roles set (fresh sign-ups) get the default roles so they
+  // can use the app immediately; covers local dev where webhooks don't reach.
+  if (!Array.isArray(rawRoles)) roles = await assignDefaultRoles(user.id);
   const id = user.externalId ?? user.id;
   const email = user.primaryEmailAddress?.emailAddress ?? "";
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || email;

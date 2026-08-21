@@ -44,7 +44,9 @@ marks them as Clerk test users, so the new-device verification code is always
 
 Admins manage everything in-app at `/admin`: assign roles (written back to
 Clerk `publicMetadata.roles`) and edit platform config (thresholds, SLAs).
-Only the first admin needs to be bootstrapped in the Clerk dashboard.
+New sign-ups default to `admin` (demo convenience — see
+`apps/web/lib/default-roles.ts` to tighten), so no Clerk-dashboard
+bootstrapping is needed.
 
 ## Commands
 
