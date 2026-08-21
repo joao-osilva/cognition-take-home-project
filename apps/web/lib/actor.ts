@@ -1,23 +1,9 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { cache } from "react";
 
-import { upsertUser, type Actor, type Role } from "@repo/core";
+import { isRole, upsertUser, type Actor } from "@repo/core";
 
 import { getDb } from "@/lib/db";
-
-const KNOWN_ROLES: readonly Role[] = [
-  "kyc:operator",
-  "kyc:approver",
-  "refunds:operator",
-  "refunds:approver",
-  "flags:operator",
-  "flags:approver",
-  "admin",
-];
-
-function isRole(value: unknown): value is Role {
-  return typeof value === "string" && (KNOWN_ROLES as readonly string[]).includes(value);
-}
 
 export interface SessionUser extends Actor {
   name: string;

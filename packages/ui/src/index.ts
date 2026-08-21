@@ -25,6 +25,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu";
+export { Checkbox } from "./components/checkbox";
 export { Input } from "./components/input";
 export { Label } from "./components/label";
 export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/select";
