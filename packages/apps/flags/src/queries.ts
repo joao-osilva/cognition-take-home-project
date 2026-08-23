@@ -18,6 +18,27 @@ export interface FlagGroup {
   pendingProdChange?: PendingFlagChange;
 }
 
+export interface FlagSnapshot {
+  key: string;
+  state: string;
+  rolloutPercentage: number | null;
+}
+
+export async function listFlagsForEnvironment(
+  db: Db,
+  environment: string,
+): Promise<FlagSnapshot[]> {
+  return db
+    .select({
+      key: featureFlags.key,
+      state: featureFlags.state,
+      rolloutPercentage: featureFlags.rolloutPercentage,
+    })
+    .from(featureFlags)
+    .where(eq(featureFlags.environment, environment))
+    .orderBy(asc(featureFlags.key));
+}
+
 export async function listFlagGroups(db: Db): Promise<FlagGroup[]> {
   const flags = await db.select().from(featureFlags).orderBy(asc(featureFlags.key));
   const pending = await db

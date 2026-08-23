@@ -52,7 +52,7 @@ The compliance backbone; must be designed in, not bolted on.
 - **Append-only `audit_log`**: actor, action, entity type/id, before/after JSON, timestamp, request metadata (IP, session). No UPDATE/DELETE grants on the table; enforce at the DB level.
 - Written **in the same transaction** as the domain mutation — an action that isn't audited must not commit.
 - **Read/access logging** for sensitive views (KYC case detail) — regulators care about who _looked_ at PII, not just who changed it. Implemented for KYC documents: every fetch through `/kyc/documents/[id]` writes a `kyc.document.viewed` audit row.
-- Browsable UI: per-record history + global filterable stream.
+- Browsable UI: per-record history + global filterable stream. Implemented: each entity detail shows its trail, and admins get a global `/audit` browser (filter by actor, entity type, action/entity-ID search, paginated).
 - Retention & export: configurable retention, export to the company's SIEM/log pipeline later.
 
 ## 4. Approval / workflow engine (replaces: Power Automate approvals)

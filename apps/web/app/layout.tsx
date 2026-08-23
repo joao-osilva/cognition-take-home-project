@@ -38,7 +38,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     ...apps
       .filter((app) => hasRole(user, app.requiredRole))
       .map((app) => ({ href: app.basePath, label: app.name })),
-    ...(hasRole(user, "admin") ? [{ href: "/admin", label: "Admin" }] : []),
+    ...(hasRole(user, "admin")
+      ? [
+          { href: "/audit", label: "Audit" },
+          { href: "/admin", label: "Admin" },
+        ]
+      : []),
   ];
 
   return (

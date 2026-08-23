@@ -61,6 +61,14 @@ page (PDF/PNG/JPEG/WebP, ≤10 MB); files are viewed through the authenticated
 `/kyc/documents/[id]` route, which streams from Blob and audits every access
 (`kyc.document.viewed`).
 
+Admins get a global audit browser at `/audit` — the full `audit_log` stream
+filterable by actor and entity type, with action/entity-ID search and
+pagination.
+
+External services can read feature flags via `GET /api/flags?environment=prod`
+(also `dev`/`staging`), authenticated with an `x-api-key` header matching
+`FLAGS_API_KEY`. The response maps flag keys to `{ state, rolloutPercentage? }`.
+
 ## Commands
 
 | Command                                      | What                                      |
