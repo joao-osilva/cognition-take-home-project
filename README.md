@@ -48,6 +48,13 @@ New sign-ups default to `admin` (demo convenience — see
 `apps/web/lib/default-roles.ts` to tighten), so no Clerk-dashboard
 bootstrapping is needed.
 
+In-app notifications surface in the bell at the bottom of the sidebar (unread
+count + mark-all-read). They're written by domain actions (e.g. refund
+decisions) and by Inngest background functions served at `/api/inngest` — an
+hourly `kyc-sla-reminder` sweep flags KYC cases past their SLA. Locally, set
+`INNGEST_DEV=1` and run `npx inngest-cli dev` to execute functions; on Vercel
+the Inngest integration provides the keys and registers the app on deploy.
+
 ## Commands
 
 | Command                                      | What                                      |
