@@ -6,7 +6,7 @@ Rules every change (human- or AI-authored) must follow. Design rationale lives i
 
 - App packages (`packages/apps/*`) never import each other. If two apps need the same entity, promote it to the core slice in `packages/db`.
 - Apps may only depend on `@repo/core`, `@repo/db`, `@repo/ui`, `@repo/config`.
-- Platform tables (`users`, `audit_log`, `approvals`, `notifications`, `app_config`) are kernel-write-only: apps use the kernel services in `@repo/core` (writeAudit, requestApproval/decideApproval, notify, getConfig) — never write these tables directly.
+- Platform tables (`users`, `audit_log`, `approvals`, `notifications`, `app_config`, `api_keys`) are kernel-write-only: apps use the kernel services in `@repo/core` (writeAudit, requestApproval/decideApproval, notify, getConfig) — never write these tables directly.
 
 ## Mutations
 

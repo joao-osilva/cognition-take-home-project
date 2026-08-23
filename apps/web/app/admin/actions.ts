@@ -7,6 +7,9 @@ import { z } from "zod";
 import {
   ALL_ROLES,
   defineAction,
+  generateApiKey,
+  insertApiKey,
+  revokeApiKeyById,
   setConfig,
   toActionResult,
   type ActionResult,
@@ -65,6 +68,40 @@ const updateConfig = defineAction({
   },
 });
 
+const createApiKey = defineAction({
+  role: "admin",
+  input: z.object({ name: z.string().min(1).max(80) }),
+  audit: (input, result: { id: string; key: string; prefix: string }) => ({
+    action: "admin.api_key.created",
+    entityType: "api_key",
+    entityId: result.id,
+    metadata: { name: input.name, prefix: result.prefix },
+  }),
+  handler: async (ctx, input) => {
+    const { key, keyHash, prefix } = generateApiKey();
+    const { id } = await insertApiKey(ctx.db, {
+      name: input.name,
+      keyHash,
+      prefix,
+      createdBy: ctx.actor.id,
+    });
+    return { id, key, prefix };
+  },
+});
+
+const revokeApiKey = defineAction({
+  role: "admin",
+  input: z.object({ id: z.string().uuid() }),
+  audit: (input) => ({
+    action: "admin.api_key.revoked",
+    entityType: "api_key",
+    entityId: input.id,
+  }),
+  handler: async (ctx, input) => {
+    await revokeApiKeyById(ctx.db, input.id);
+  },
+});
+
 async function ctx() {
   return { db: getDb(), actor: await getActor() };
 }
@@ -81,6 +118,24 @@ export async function setUserRolesAction(
 
 export async function updateConfigAction(key: string, valueJson: string): Promise<ActionResult> {
   const result = await toActionResult(updateConfig(await ctx(), { key, valueJson }));
+  revalidatePath("/admin");
+  return result;
+}
+
+export type CreateApiKeyResult = { ok: true; key: string } | { ok: false; error: string };
+
+export async function createApiKeyAction(name: string): Promise<CreateApiKeyResult> {
+  try {
+    const { key } = await createApiKey(await ctx(), { name });
+    revalidatePath("/admin");
+    return { ok: true, key };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
+  }
+}
+
+export async function revokeApiKeyAction(id: string): Promise<ActionResult> {
+  const result = await toActionResult(revokeApiKey(await ctx(), { id }));
   revalidatePath("/admin");
   return result;
 }
