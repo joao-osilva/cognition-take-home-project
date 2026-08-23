@@ -3,7 +3,7 @@ import { z } from "zod";
 import { defineAction, requireRole, ForbiddenError } from "@repo/core";
 import { eq } from "@repo/db/orm";
 
-import { kycCases } from "./schema";
+import { kycCases, kycDocuments } from "./schema";
 
 export const claimCase = defineAction({
   role: "kyc:operator",
@@ -23,6 +23,36 @@ export const claimCase = defineAction({
       .set({ status: "in_review", assigneeId: actor.id, updatedAt: new Date() })
       .where(eq(kycCases.id, input.caseId));
     return { caseId: input.caseId };
+  },
+});
+
+export const uploadDocument = defineAction({
+  role: "kyc:operator",
+  input: z.object({
+    caseId: z.string().uuid(),
+    type: z.enum(["passport", "proof_of_address", "selfie", "other"]),
+    blobUrl: z.string().min(1),
+  }),
+  audit: (input, result: { documentId: string; caseId: string }) => ({
+    action: "kyc.document.uploaded",
+    entityType: "kyc_document",
+    entityId: result.documentId,
+    metadata: { caseId: input.caseId, type: input.type },
+  }),
+  handler: async ({ db }, input) => {
+    const rows = await db.select().from(kycCases).where(eq(kycCases.id, input.caseId)).limit(1);
+    const kycCase = rows[0];
+    if (!kycCase) throw new Error("Case not found");
+    if (kycCase.status === "approved" || kycCase.status === "rejected") {
+      throw new Error("Documents can only be added to open cases");
+    }
+    const inserted = await db
+      .insert(kycDocuments)
+      .values({ caseId: input.caseId, type: input.type, blobUrl: input.blobUrl })
+      .returning({ id: kycDocuments.id });
+    const doc = inserted[0];
+    if (!doc) throw new Error("Failed to record document");
+    return { documentId: doc.id, caseId: input.caseId };
   },
 });
 
