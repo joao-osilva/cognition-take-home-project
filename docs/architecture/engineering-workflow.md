@@ -4,7 +4,7 @@
 
 - **Server actions for all mutations** (create refund, decide case, toggle flag). Typed end-to-end, zod-validated at the boundary. Each action is declared through a kernel `defineAction()` helper that enforces the pipeline `auth → can() → validate → domain logic → audit` — it cannot be skipped by construction.
 - **REST route handlers only where an external consumer exists**:
-  - `/api/flags` — the feature-flag read API consumed by other services (token-authenticated)
+  - `/api/flags` — the feature-flag read API consumed by other services (per-consumer API keys managed in Admin → API keys)
   - `/api/inngest` — Inngest function mount
   - `/api/webhooks/clerk` — user-mirror sync
 - **Reads** via server components calling package-exported query functions. No tRPC — server actions already provide typed RPC.
@@ -13,6 +13,7 @@
 ## ORM: Drizzle
 
 Chosen over Prisma:
+
 - SQL-like typed queries; no codegen step
 - Lightweight on serverless (pairs with Neon's HTTP driver; no engine binary/cold-start weight)
 - Migrations are plain SQL files committed to git — reviewable by engineers and auditors alike
@@ -20,15 +21,18 @@ Chosen over Prisma:
 ## CI/CD
 
 ### Local hooks (husky + lint-staged)
+
 - **pre-commit**: lint-staged → eslint --fix + prettier on staged files
 - **pre-push**: `turbo typecheck` on affected packages
 - Fast checks only; test suites belong in CI, not hooks
 
 ### CI (GitHub Actions)
+
 - **On PR**: `turbo lint typecheck test build` — Turborepo caching ensures only affected packages rerun
 - **On merge to main**: same checks + production migration + deploy promotion
 
 ### CD (Vercel git integration + marketplace integrations)
+
 - Every PR → preview deployment; merge to main → production deployment. No custom deploy pipeline.
 - **Neon Vercel integration**: auto-provisions connection-string env vars per Vercel environment and auto-creates/deletes a Neon database branch per preview deployment — no custom branch-lifecycle automation needed.
 - **Inngest Vercel integration**: auto-wires signing/event keys and registers the app's functions on every deploy.

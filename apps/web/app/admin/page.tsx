@@ -1,4 +1,4 @@
-import { hasRole, listConfig } from "@repo/core";
+import { hasRole, listApiKeys, listConfig } from "@repo/core";
 import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui";
 
 import { getActor } from "@/lib/actor";
@@ -6,7 +6,13 @@ import { listClerkUsers } from "@/lib/admin";
 import { getDb } from "@/lib/db";
 import { NoAccess } from "@/lib/guard";
 
-import { setUserRolesAction, updateConfigAction } from "./actions";
+import {
+  createApiKeyAction,
+  revokeApiKeyAction,
+  setUserRolesAction,
+  updateConfigAction,
+} from "./actions";
+import { ApiKeysTable } from "./api-keys-table";
 import { ConfigTable } from "./config-table";
 import { UsersTable } from "./users-table";
 
@@ -16,7 +22,14 @@ export default async function AdminPage() {
   const actor = await getActor();
   if (!hasRole(actor, "admin")) return <NoAccess />;
 
-  const [users, config] = await Promise.all([listClerkUsers(), listConfig(getDb())]);
+  const [users, config, apiKeys] = await Promise.all([
+    listClerkUsers(),
+    listConfig(getDb()),
+    listApiKeys(getDb()),
+  ]);
+
+  const formatDate = (date: Date | null) =>
+    date ? date.toISOString().slice(0, 16).replace("T", " ") : null;
 
   return (
     <div>
@@ -28,6 +41,7 @@ export default async function AdminPage() {
         <TabsList>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="config">Config</TabsTrigger>
+          <TabsTrigger value="api-keys">API keys</TabsTrigger>
         </TabsList>
         <TabsContent value="users" className="mt-4">
           <UsersTable users={users} onSetRoles={setUserRolesAction} />
@@ -41,6 +55,21 @@ export default async function AdminPage() {
               updatedAt: entry.updatedAt.toISOString().slice(0, 16).replace("T", " "),
             }))}
             onUpdate={updateConfigAction}
+          />
+        </TabsContent>
+        <TabsContent value="api-keys" className="mt-4">
+          <ApiKeysTable
+            keys={apiKeys.map((key) => ({
+              id: key.id,
+              name: key.name,
+              prefix: key.prefix,
+              createdBy: key.createdBy,
+              createdAt: formatDate(key.createdAt) ?? "",
+              lastUsedAt: formatDate(key.lastUsedAt),
+              revokedAt: formatDate(key.revokedAt),
+            }))}
+            onCreate={createApiKeyAction}
+            onRevoke={revokeApiKeyAction}
           />
         </TabsContent>
       </Tabs>

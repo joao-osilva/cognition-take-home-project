@@ -66,8 +66,10 @@ filterable by actor and entity type, with action/entity-ID search and
 pagination.
 
 External services can read feature flags via `GET /api/flags?environment=prod`
-(also `dev`/`staging`), authenticated with an `x-api-key` header matching
-`FLAGS_API_KEY`. The response maps flag keys to `{ state, rolloutPercentage? }`.
+(also `dev`/`staging`), authenticated with an `x-api-key` header. Admins create
+and revoke per-consumer keys in Admin → API keys (the key is shown once at
+creation; only a hash is stored). The response maps flag keys to
+`{ state, rolloutPercentage? }`.
 
 ## Commands
 

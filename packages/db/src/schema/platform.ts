@@ -50,6 +50,19 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Machine-to-machine keys for the external read APIs (e.g. /api/flags).
+// Only a SHA-256 hash is stored; the plaintext key is shown once at creation.
+export const apiKeys = pgTable("api_keys", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  keyHash: text("key_hash").notNull().unique(),
+  prefix: text("prefix").notNull(),
+  createdBy: text("created_by").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+});
+
 export const appConfig = pgTable("app_config", {
   key: text("key").primaryKey(),
   value: jsonb("value").notNull(),
