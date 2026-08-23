@@ -1,6 +1,6 @@
 # System Components — In-House Internal-Tools Platform
 
-*Context: a fintech engineering team building internal tools. The goal is not "3 one-off apps" but a small platform layer so that these 3 apps — and any future internal tool — get authentication, authorization, auditability, and approvals without re-building them each time. This is the actual thing Power Apps sells; replicating it well means replicating the platform, not just the screens.*
+_Context: a fintech engineering team building internal tools. The goal is not "3 one-off apps" but a small platform layer so that these 3 apps — and any future internal tool — get authentication, authorization, auditability, and approvals without re-building them each time. This is the actual thing Power Apps sells; replicating it well means replicating the platform, not just the screens._
 
 ## Component map
 
@@ -51,7 +51,7 @@ The compliance backbone; must be designed in, not bolted on.
 
 - **Append-only `audit_log`**: actor, action, entity type/id, before/after JSON, timestamp, request metadata (IP, session). No UPDATE/DELETE grants on the table; enforce at the DB level.
 - Written **in the same transaction** as the domain mutation — an action that isn't audited must not commit.
-- **Read/access logging** for sensitive views (KYC case detail) — regulators care about who *looked* at PII, not just who changed it.
+- **Read/access logging** for sensitive views (KYC case detail) — regulators care about who _looked_ at PII, not just who changed it.
 - Browsable UI: per-record history + global filterable stream.
 - Retention & export: configurable retention, export to the company's SIEM/log pipeline later.
 
@@ -83,13 +83,14 @@ The compliance backbone; must be designed in, not bolted on.
 
 ## 8. Notifications (replaces: Outlook/Teams connectors)
 
-- Thin dispatcher interface: `notify(user, event)` → Slack webhook and/or email (SES/SendGrid).
-- Triggered by approval-engine events (approval requested, decided) and flag changes in prod.
-- Deliberately minimal — this is where connector-catalog envy starts; resist it until a real need appears.
+- Thin dispatcher interface: `notify(recipient, type, payload)` writes the `notifications` table; the shell renders a bell with unread count and mark-as-read (a `defineAction()` scoped to the current actor).
+- Triggered synchronously by domain actions (e.g. refund decided) and by Inngest background functions served from `/api/inngest`: an hourly `kyc-sla-reminder` sweep notifies the assignee (or all `kyc:approver`s when unassigned) about cases past `sla_due_at`, deduplicated per case so reruns don't flood.
+- Slack/email delivery deliberately deferred (known-gaps #8) — this is where connector-catalog envy starts; resist it until a real need appears.
 
 ## 9. Operations (replaces: Microsoft's SaaS ops)
 
 The honest cost-center of building:
+
 - Deploy: one container + managed Postgres (RDS/Cloud SQL/Fly/Render). CI/CD via existing GitHub Actions.
 - Backups: managed-DB automated backups + tested restore.
 - Monitoring: error tracking (Sentry) + uptime check; audit log doubles as activity monitoring.

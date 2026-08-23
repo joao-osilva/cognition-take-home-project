@@ -5,8 +5,10 @@ import type { ReactNode } from "react";
 import { hasRole } from "@repo/core";
 import { Toaster } from "@repo/ui";
 
+import { NotificationBell } from "@/components/notification-bell";
 import { SidebarNav, type NavItem } from "@/components/sidebar-nav";
 import { getSessionUser } from "@/lib/actor";
+import { getNotificationsForUser } from "@/lib/notifications";
 import { apps } from "@/lib/apps";
 
 import "./globals.css";
@@ -28,6 +30,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </html>
     );
   }
+
+  const { items: notificationItems, unreadCount } = await getNotificationsForUser(user.id);
 
   const navItems: NavItem[] = [
     { href: "/", label: "Home" },
@@ -54,6 +58,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               </div>
               <div className="border-sidebar-border flex items-center gap-3 border-t px-4 py-3">
                 <UserButton />
+                <NotificationBell notifications={notificationItems} unreadCount={unreadCount} />
                 <div className="min-w-0">
                   <div className="text-sidebar-foreground truncate text-sm font-medium">
                     {user.name}

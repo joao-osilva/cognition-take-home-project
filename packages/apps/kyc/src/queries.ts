@@ -1,5 +1,5 @@
 import { coreSchema, platformSchema, type Db } from "@repo/db";
-import { desc, eq } from "@repo/db/orm";
+import { and, desc, eq, inArray, lt } from "@repo/db/orm";
 
 import { kycCases, kycDocuments } from "./schema";
 
@@ -42,6 +42,28 @@ export async function listKycCases(
       (!filters.status || r.kycCase.status === filters.status) &&
       (!filters.riskLevel || r.kycCase.riskLevel === filters.riskLevel),
   );
+}
+
+export interface OverdueKycCase {
+  id: string;
+  customerName: string;
+  assigneeId: string | null;
+  slaDueAt: Date;
+}
+
+export async function listOverdueKycCases(db: Db, now = new Date()): Promise<OverdueKycCase[]> {
+  const rows = await db
+    .select({
+      id: kycCases.id,
+      customerName: coreSchema.customers.name,
+      assigneeId: kycCases.assigneeId,
+      slaDueAt: kycCases.slaDueAt,
+    })
+    .from(kycCases)
+    .innerJoin(coreSchema.customers, eq(kycCases.customerId, coreSchema.customers.id))
+    .where(and(inArray(kycCases.status, ["pending", "in_review"]), lt(kycCases.slaDueAt, now)));
+
+  return rows.filter((r): r is OverdueKycCase => r.slaDueAt !== null);
 }
 
 export async function getKycCase(db: Db, caseId: string): Promise<KycCaseDetail | undefined> {

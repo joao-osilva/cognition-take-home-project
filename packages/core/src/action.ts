@@ -11,7 +11,9 @@ export interface ActionContext {
 }
 
 export interface ActionDefinition<Schema extends z.ZodTypeAny, Result> {
-  role: Role;
+  /** Required role; omit for actions any authenticated actor may perform
+   * (the handler must still scope its effects to the actor). */
+  role?: Role;
   input: Schema;
   audit: (input: z.infer<Schema>, result: Result) => AuditEntry;
   handler: (ctx: ActionContext, input: z.infer<Schema>) => Promise<Result>;
@@ -25,7 +27,7 @@ export function defineAction<Schema extends z.ZodTypeAny, Result>(
   definition: ActionDefinition<Schema, Result>,
 ) {
   return async (ctx: ActionContext, rawInput: unknown): Promise<Result> => {
-    requireRole(ctx.actor, definition.role);
+    if (definition.role) requireRole(ctx.actor, definition.role);
     const input = definition.input.parse(rawInput);
     const result = await definition.handler(ctx, input);
     await writeAudit(ctx.db, ctx.actor, definition.audit(input, result));
