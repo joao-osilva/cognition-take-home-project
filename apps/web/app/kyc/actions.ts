@@ -43,6 +43,8 @@ export async function escalateCaseAction(caseId: string, reason: string): Promis
 
 const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 const ALLOWED_CONTENT_TYPES = new Set(["application/pdf", "image/png", "image/jpeg", "image/webp"]);
+const DOCUMENT_TYPES = ["passport", "proof_of_address", "selfie", "other"] as const;
+type DocumentType = (typeof DOCUMENT_TYPES)[number];
 
 export async function uploadKycDocumentAction(
   caseId: string,
@@ -60,21 +62,31 @@ export async function uploadKycDocumentAction(
   if (!ALLOWED_CONTENT_TYPES.has(file.type)) {
     return { ok: false, error: "Only PDF, PNG, JPEG, or WebP files are allowed" };
   }
+  if (!DOCUMENT_TYPES.includes(type as DocumentType)) {
+    return { ok: false, error: "Invalid document type" };
+  }
 
   // Store under a random pathname in the private Blob store; the DB row's
   // blobUrl holds the pathname, and reads go through the authenticated
   // /kyc/documents/[documentId] route.
   const pathname = `kyc/${caseId}/${crypto.randomUUID()}`;
-  const blob = await put(pathname, file, {
-    access: "private",
-    contentType: file.type,
-  });
+  let blobPathname: string;
+  try {
+    const blob = await put(pathname, file, {
+      access: "private",
+      contentType: file.type,
+    });
+    blobPathname = blob.pathname;
+  } catch (error) {
+    console.error("Blob upload failed", error);
+    return { ok: false, error: "Document storage is unavailable — try again later" };
+  }
 
   const result = await toActionResult(
     uploadDocument(context, {
       caseId,
-      type: String(type) as "passport" | "proof_of_address" | "selfie" | "other",
-      blobUrl: blob.pathname,
+      type: type as DocumentType,
+      blobUrl: blobPathname,
     }),
   );
   revalidate(caseId);

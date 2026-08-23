@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
     "@repo/app-refunds",
     "@repo/app-flags",
   ],
+  experimental: {
+    serverActions: {
+      // KYC document uploads (max 10 MB) travel through a Server Action.
+      bodySizeLimit: "12mb",
+    },
+  },
 };
 
 export default nextConfig;

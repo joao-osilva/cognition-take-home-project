@@ -36,6 +36,10 @@ export function DocumentUpload({
       toast.error("Choose a file first");
       return;
     }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File exceeds the 10 MB limit");
+      return;
+    }
     const formData = new FormData();
     formData.set("type", type);
     formData.set("file", file);

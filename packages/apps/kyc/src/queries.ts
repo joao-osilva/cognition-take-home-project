@@ -1,5 +1,5 @@
 import { coreSchema, platformSchema, type Db } from "@repo/db";
-import { and, desc, eq, inArray, lt } from "@repo/db/orm";
+import { and, desc, eq, inArray, lt, or, sql } from "@repo/db/orm";
 
 import { kycCases, kycDocuments } from "./schema";
 
@@ -92,7 +92,12 @@ export async function getKycCase(db: Db, caseId: string): Promise<KycCaseDetail 
   const auditTrail = await db
     .select()
     .from(platformSchema.auditLog)
-    .where(eq(platformSchema.auditLog.entityId, caseId))
+    .where(
+      or(
+        eq(platformSchema.auditLog.entityId, caseId),
+        sql`${platformSchema.auditLog.metadata} ->> 'caseId' = ${caseId}`,
+      ),
+    )
     .orderBy(desc(platformSchema.auditLog.createdAt));
 
   return { ...row, documents, auditTrail };
