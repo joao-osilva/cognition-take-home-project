@@ -66,6 +66,11 @@ export async function listOverdueKycCases(db: Db, now = new Date()): Promise<Ove
   return rows.filter((r): r is OverdueKycCase => r.slaDueAt !== null);
 }
 
+export async function getKycDocument(db: Db, documentId: string): Promise<KycDocument | undefined> {
+  const rows = await db.select().from(kycDocuments).where(eq(kycDocuments.id, documentId)).limit(1);
+  return rows[0];
+}
+
 export async function getKycCase(db: Db, caseId: string): Promise<KycCaseDetail | undefined> {
   const rows = await db
     .select({

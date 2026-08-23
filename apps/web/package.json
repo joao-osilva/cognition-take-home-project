@@ -17,6 +17,7 @@
     "@repo/core": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@vercel/blob": "^2.8.0",
     "inngest": "^4.18.1",
     "lucide-react": "^1.33.0",
     "next": "^15.1.3",

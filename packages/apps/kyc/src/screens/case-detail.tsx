@@ -10,6 +10,7 @@ import {
 
 import type { KycCaseDetail } from "../queries";
 import { CaseActions, type KycCaseActions } from "./case-actions";
+import { DocumentUpload } from "./document-upload";
 
 export function KycCaseScreen({
   detail,
@@ -59,7 +60,7 @@ export function KycCaseScreen({
                 <li key={doc.id} className="flex items-center justify-between">
                   <span className="capitalize">{doc.type.replaceAll("_", " ")}</span>
                   <a
-                    href={doc.blobUrl}
+                    href={`/kyc/documents/${doc.id}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-primary underline underline-offset-2"
@@ -72,6 +73,9 @@ export function KycCaseScreen({
                 <li className="text-muted-foreground">No documents uploaded.</li>
               ) : null}
             </ul>
+            {kycCase.status !== "approved" && kycCase.status !== "rejected" ? (
+              <DocumentUpload upload={actions.uploadDocument} />
+            ) : null}
           </CardContent>
         </Card>
         <Card>

@@ -9,6 +9,7 @@ export interface KycCaseActions {
   claim: () => Promise<ActionResult>;
   decide: (decision: "approved" | "rejected", reason: string) => Promise<ActionResult>;
   escalate: (reason: string) => Promise<ActionResult>;
+  uploadDocument: (formData: FormData) => Promise<ActionResult>;
 }
 
 export function CaseActions({ status, actions }: { status: string; actions: KycCaseActions }) {

@@ -7,7 +7,12 @@ import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
 import { canView, NoAccess } from "@/lib/guard";
 
-import { claimCaseAction, decideCaseAction, escalateCaseAction } from "../actions";
+import {
+  claimCaseAction,
+  decideCaseAction,
+  escalateCaseAction,
+  uploadKycDocumentAction,
+} from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +31,7 @@ export default async function KycCasePage({ params }: { params: Promise<{ caseId
         claim: claimCaseAction.bind(null, caseId),
         decide: decideCaseAction.bind(null, caseId),
         escalate: escalateCaseAction.bind(null, caseId),
+        uploadDocument: uploadKycDocumentAction.bind(null, caseId),
       }}
     />
   );

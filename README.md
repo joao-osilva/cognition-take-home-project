@@ -55,6 +55,12 @@ hourly `kyc-sla-reminder` sweep flags KYC cases past their SLA. Locally, set
 `INNGEST_DEV=1` and run `npx inngest-cli dev` to execute functions; on Vercel
 the Inngest integration provides the keys and registers the app on deploy.
 
+KYC documents are stored in a private Vercel Blob store (`BLOB_READ_WRITE_TOKEN`,
+injected by the Vercel Blob integration). Operators upload from the case detail
+page (PDF/PNG/JPEG/WebP, ≤10 MB); files are viewed through the authenticated
+`/kyc/documents/[id]` route, which streams from Blob and audits every access
+(`kyc.document.viewed`).
+
 ## Commands
 
 | Command                                      | What                                      |

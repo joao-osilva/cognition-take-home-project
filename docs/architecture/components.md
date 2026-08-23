@@ -51,7 +51,7 @@ The compliance backbone; must be designed in, not bolted on.
 
 - **Append-only `audit_log`**: actor, action, entity type/id, before/after JSON, timestamp, request metadata (IP, session). No UPDATE/DELETE grants on the table; enforce at the DB level.
 - Written **in the same transaction** as the domain mutation — an action that isn't audited must not commit.
-- **Read/access logging** for sensitive views (KYC case detail) — regulators care about who _looked_ at PII, not just who changed it.
+- **Read/access logging** for sensitive views (KYC case detail) — regulators care about who _looked_ at PII, not just who changed it. Implemented for KYC documents: every fetch through `/kyc/documents/[id]` writes a `kyc.document.viewed` audit row.
 - Browsable UI: per-record history + global filterable stream.
 - Retention & export: configurable retention, export to the company's SIEM/log pipeline later.
 
@@ -68,6 +68,7 @@ The compliance backbone; must be designed in, not bolted on.
 - Schema migrations in git (the ALM story Power Apps struggles with: here it's just code review + CI).
 - Validation at both API layer (rich errors) and DB layer (constraints as last line of defense — amounts non-negative, refund ≤ transaction amount, FK integrity).
 - No ORM lock-in requirement; pick per stack.
+- **KYC documents** live in a private Vercel Blob store: uploads go through a `kyc:operator`-gated server action (type/size validated, random pathname per file) that records the Blob pathname in `kyc_documents`; reads stream through the authenticated `/kyc/documents/[id]` route — the store is never publicly reachable.
 
 ## 6. API layer (replaces: Power Apps' hidden middle tier)
 
