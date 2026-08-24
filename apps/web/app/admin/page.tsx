@@ -1,5 +1,5 @@
 import { hasRole, listApiKeys, listConfig } from "@repo/core";
-import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui";
+import { PageHeader, Tabs, TabsContent, TabsList, TabsTrigger, formatDateTime } from "@repo/ui";
 
 import { getActor } from "@/lib/actor";
 import { listClerkUsers } from "@/lib/admin";
@@ -28,8 +28,7 @@ export default async function AdminPage() {
     listApiKeys(getDb()),
   ]);
 
-  const formatDate = (date: Date | null) =>
-    date ? date.toISOString().slice(0, 16).replace("T", " ") : null;
+  const formatDate = (date: Date | null) => (date ? formatDateTime(date) : null);
 
   return (
     <div>
@@ -52,7 +51,7 @@ export default async function AdminPage() {
               key: entry.key,
               valueJson: JSON.stringify(entry.value),
               updatedBy: entry.updatedBy,
-              updatedAt: entry.updatedAt.toISOString().slice(0, 16).replace("T", " "),
+              updatedAt: formatDateTime(entry.updatedAt),
             }))}
             onUpdate={updateConfigAction}
           />

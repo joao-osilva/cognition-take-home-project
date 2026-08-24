@@ -45,9 +45,9 @@ export function NotificationBell({
         <button
           type="button"
           aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
-          className="text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground relative rounded-md p-2 transition-colors"
+          className="text-muted-foreground hover:bg-accent hover:text-foreground relative flex size-9 items-center justify-center rounded-md transition-colors duration-150"
         >
-          <Bell className="size-4" />
+          <Bell className="size-4" strokeWidth={1.75} />
           {unreadCount > 0 && (
             <Badge className="absolute -top-1 -right-1 h-4 min-w-4 rounded-full px-1 text-[10px]">
               {unreadCount > 99 ? "99+" : unreadCount}
@@ -55,7 +55,7 @@ export function NotificationBell({
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" side="right" className="w-80 p-0">
+      <PopoverContent align="end" side="bottom" className="w-80 p-0">
         <div className="flex items-center justify-between border-b px-4 py-2">
           <span className="text-sm font-medium">Notifications</span>
           {unreadCount > 0 && (

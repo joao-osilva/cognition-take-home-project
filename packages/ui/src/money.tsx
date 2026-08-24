@@ -3,5 +3,5 @@ export function formatMoney(amountCents: number, currency: string): string {
 }
 
 export function Money({ amountCents, currency }: { amountCents: number; currency: string }) {
-  return <span className="tabular-nums">{formatMoney(amountCents, currency)}</span>;
+  return <span className="font-mono tabular-nums">{formatMoney(amountCents, currency)}</span>;
 }

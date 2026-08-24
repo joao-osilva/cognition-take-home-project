@@ -1,7 +1,9 @@
 import { hasRole, queryAuditLog } from "@repo/core";
 import {
   Badge,
+  EmptyState,
   PageHeader,
+  formatDateTime,
   Table,
   TableBody,
   TableCell,
@@ -60,7 +62,7 @@ export default async function AuditPage({
         entityTypes={result.entityTypes}
         current={{ actor: actorId, entity: entityType, q: search }}
       />
-      <div className="mt-4 rounded-lg border">
+      <div className="bg-card mt-4 overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>
@@ -72,37 +74,34 @@ export default async function AuditPage({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground py-8 text-center">
-                  No audit events match the current filters
+            {result.rows.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="text-muted-foreground font-mono text-xs whitespace-nowrap tabular-nums">
+                  {formatDateTime(row.createdAt)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">{row.actorName ?? row.actorId}</TableCell>
+                <TableCell>
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {row.action}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground max-w-56 truncate font-mono text-xs">
+                  {row.entityType} · {row.entityId}
+                </TableCell>
+                <TableCell className="text-muted-foreground max-w-72 truncate text-xs">
+                  {row.metadata ? JSON.stringify(row.metadata) : "—"}
                 </TableCell>
               </TableRow>
-            ) : (
-              result.rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="text-muted-foreground whitespace-nowrap text-xs">
-                    {row.createdAt.toISOString().slice(0, 16).replace("T", " ")}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {row.actorName ?? row.actorId}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="font-mono text-xs">
-                      {row.action}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground max-w-56 truncate font-mono text-xs">
-                    {row.entityType} · {row.entityId}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground max-w-72 truncate text-xs">
-                    {row.metadata ? JSON.stringify(row.metadata) : "—"}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
         </Table>
+        {result.rows.length === 0 ? (
+          <EmptyState
+            title="No audit events match the current filters"
+            hint="Try widening the actor, entity, or search filters."
+            className="m-4"
+          />
+        ) : null}
       </div>
       <Pagination page={page} totalPages={totalPages} total={result.total} />
     </div>

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-import { Badge, Button, cn, toast } from "@repo/ui";
+import { Inbox } from "lucide-react";
+
+import { Badge, Button, EmptyState, cn, toast } from "@repo/ui";
 
 import { markNotificationsReadAction } from "@/app/notifications/actions";
 
@@ -35,7 +37,7 @@ export function InboxList({ items }: { items: InboxItem[] }) {
   const hasUnread = items.some((item) => !item.read);
 
   return (
-    <div className="rounded-lg border">
+    <div className="bg-card rounded-lg border shadow-xs">
       <div className="flex items-center justify-between border-b px-4 py-2">
         <span className="text-sm font-medium">Notifications</span>
         {hasUnread && (
@@ -45,15 +47,21 @@ export function InboxList({ items }: { items: InboxItem[] }) {
         )}
       </div>
       {items.length === 0 ? (
-        <p className="text-muted-foreground px-4 py-10 text-center text-sm">
-          Nothing here — you're all caught up
-        </p>
+        <EmptyState
+          icon={<Inbox />}
+          title="You're all caught up"
+          hint="New notifications from approvals, reminders, and workflows land here."
+          className="m-4 border-0"
+        />
       ) : (
         <ul className="divide-y">
           {items.map((item) => (
             <li
               key={item.id}
-              className={cn("flex items-start gap-3 px-4 py-3", !item.read && "bg-accent/40")}
+              className={cn(
+                "hover:bg-muted/50 flex items-start gap-3 px-4 py-3 transition-colors duration-150",
+                !item.read && "bg-primary/[0.04] dark:bg-primary/[0.08]",
+              )}
             >
               <span
                 className={cn(
@@ -64,7 +72,7 @@ export function InboxList({ items }: { items: InboxItem[] }) {
               <div className="min-w-0 flex-1">
                 <p className="text-sm">{item.message}</p>
                 <div className="mt-0.5 flex items-center gap-2">
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="font-mono text-[10px]">
                     {item.type}
                   </Badge>
                   <span className="text-muted-foreground text-xs">{item.createdAt}</span>

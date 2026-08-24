@@ -1,10 +1,16 @@
+import { Lock } from "lucide-react";
+
 import { hasRole, type Actor, type Role } from "@repo/core";
+import { EmptyState } from "@repo/ui";
 
 export function NoAccess() {
   return (
-    <p className="text-muted-foreground text-sm">
-      Your role does not have access to this app. Ask an admin to assign you a role.
-    </p>
+    <EmptyState
+      icon={<Lock />}
+      title="Your role does not have access to this app"
+      hint="Ask an admin to assign you a role in the Admin console."
+      className="mt-8"
+    />
   );
 }
 
