@@ -66,7 +66,7 @@ export function SidebarNav({ items, onNavigate }: { items: NavItem[]; onNavigate
               ) : null}
               <span className="min-w-0 flex-1 truncate">{item.label}</span>
               {item.badge ? (
-                <span className="bg-sidebar-primary rounded-full px-1.5 py-0.5 text-[10px] leading-none font-semibold text-white">
+                <span className="bg-sidebar-primary text-sidebar-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] leading-none font-semibold">
                   {item.badge > 99 ? "99+" : item.badge}
                 </span>
               ) : null}

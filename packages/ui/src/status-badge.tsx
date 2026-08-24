@@ -24,8 +24,8 @@ const TONE_CLASSES: Record<Tone, { pill: string; dot: string }> = {
     dot: "bg-zinc-400",
   },
   accent: {
-    pill: "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-400 dark:border-indigo-900",
-    dot: "bg-indigo-500",
+    pill: "bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700",
+    dot: "bg-stone-500 dark:bg-stone-400",
   },
 };
 

@@ -12,8 +12,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 function Brand() {
   return (
     <div className="flex items-center gap-2.5 px-5 py-5">
-      <div className="bg-sidebar-primary flex size-7 shrink-0 items-center justify-center rounded-md">
-        <Zap className="size-4 text-white" strokeWidth={2} />
+      <div className="bg-sidebar-primary flex size-7 shrink-0 items-center justify-center rounded-full">
+        <Zap className="text-sidebar-primary-foreground size-4" strokeWidth={2} />
       </div>
       <div className="min-w-0">
         <div className="text-sidebar-foreground truncate text-sm font-semibold tracking-tight">

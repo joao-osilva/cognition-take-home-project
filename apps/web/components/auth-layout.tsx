@@ -6,8 +6,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="bg-sidebar hidden flex-col justify-between p-10 lg:flex">
         <div className="flex items-center gap-2.5">
-          <div className="bg-sidebar-primary flex size-8 items-center justify-center rounded-md">
-            <Zap className="size-4.5 text-white" strokeWidth={2} />
+          <div className="bg-sidebar-primary flex size-8 items-center justify-center rounded-full">
+            <Zap className="text-sidebar-primary-foreground size-4.5" strokeWidth={2} />
           </div>
           <span className="text-sidebar-foreground text-base font-semibold tracking-tight">
             Internal Tools
