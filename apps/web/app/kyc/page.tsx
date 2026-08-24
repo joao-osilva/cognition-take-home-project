@@ -1,6 +1,8 @@
 import { kycAppMeta, listKycCases } from "@repo/app-kyc";
 import { KycQueueScreen } from "@repo/app-kyc/screens";
 
+import { createKycCaseAction } from "./actions";
+
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
 import { canView, NoAccess } from "@/lib/guard";
@@ -22,5 +24,5 @@ export default async function KycPage({
   };
   const cases = await listKycCases(getDb(), filters);
 
-  return <KycQueueScreen cases={cases} filters={filters} />;
+  return <KycQueueScreen cases={cases} filters={filters} onCreateCase={createKycCaseAction} />;
 }

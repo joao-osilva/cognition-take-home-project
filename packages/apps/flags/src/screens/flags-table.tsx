@@ -1,5 +1,6 @@
 import type { ActionResult } from "@repo/core";
 import {
+  EmptyState,
   PageHeader,
   Table,
   TableBody,
@@ -38,7 +39,7 @@ export function FlagsScreen({
         title="Feature Flags"
         description="Toggle flags per environment — production changes require approval"
       />
-      <div className="rounded-lg border">
+      <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>
@@ -54,7 +55,7 @@ export function FlagsScreen({
             {groups.map((group) => (
               <TableRow key={group.key}>
                 <TableCell>
-                  <div className="font-medium">{group.key}</div>
+                  <div className="font-mono text-[13px] font-medium">{group.key}</div>
                   <div className="text-muted-foreground text-xs">{group.description}</div>
                 </TableCell>
                 {ENVIRONMENTS.map((env) => {
@@ -86,15 +87,15 @@ export function FlagsScreen({
                 })}
               </TableRow>
             ))}
-            {groups.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} className="text-muted-foreground py-8 text-center">
-                  No feature flags yet.
-                </TableCell>
-              </TableRow>
-            ) : null}
           </TableBody>
         </Table>
+        {groups.length === 0 ? (
+          <EmptyState
+            title="No feature flags yet"
+            hint="Flags appear here once they are defined for an environment."
+            className="m-4"
+          />
+        ) : null}
       </div>
     </div>
   );

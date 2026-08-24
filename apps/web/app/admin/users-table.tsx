@@ -34,40 +34,42 @@ export function UsersTable({
   onSetRoles: (clerkUserId: string, actorId: string, roles: Role[]) => Promise<ActionResult>;
 }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Roles</TableHead>
-          <TableHead className="w-24" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {users.map((user) => (
-          <TableRow key={user.clerkUserId}>
-            <TableCell className="font-medium">{user.name}</TableCell>
-            <TableCell className="text-muted-foreground">{user.email}</TableCell>
-            <TableCell>
-              <div className="flex flex-wrap gap-1">
-                {user.roles.length ? (
-                  user.roles.map((role) => (
-                    <Badge key={role} variant="secondary">
-                      {role}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-muted-foreground text-sm">no roles</span>
-                )}
-              </div>
-            </TableCell>
-            <TableCell className="text-right">
-              <EditRolesDialog user={user} onSetRoles={onSetRoles} />
-            </TableCell>
+    <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Roles</TableHead>
+            <TableHead className="w-24" />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.clerkUserId}>
+              <TableCell className="font-medium">{user.name}</TableCell>
+              <TableCell className="text-muted-foreground">{user.email}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {user.roles.length ? (
+                    user.roles.map((role) => (
+                      <Badge key={role} variant="secondary">
+                        {role}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-muted-foreground text-sm">no roles</span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <EditRolesDialog user={user} onSetRoles={onSetRoles} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

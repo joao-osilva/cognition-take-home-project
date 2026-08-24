@@ -1,11 +1,9 @@
 import type { ActionResult } from "@repo/core";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  EmptyState,
   Money,
   PageHeader,
+  StatCard,
   StatusBadge,
   Table,
   TableBody,
@@ -52,22 +50,22 @@ export function RefundsDashboardScreen({
         }
       />
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Metric label="Pending requests" value={String(metrics.pendingCount)} />
-        <Metric
+        <StatCard label="Pending requests" value={String(metrics.pendingCount)} />
+        <StatCard
           label="Pending amount"
           value={<Money amountCents={metrics.pendingAmount} currency="USD" />}
         />
-        <Metric
+        <StatCard
           label="Approved / rejected"
           value={`${metrics.approvedCount} / ${metrics.rejectedCount}`}
         />
       </div>
-      <div className="rounded-lg border">
+      <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Customer</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
               <TableHead>Reason</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Requested by</TableHead>
@@ -78,7 +76,7 @@ export function RefundsDashboardScreen({
             {rows.map(({ refund, customerName, requesterName, approvalId }) => (
               <TableRow key={refund.id}>
                 <TableCell className="font-medium">{customerName}</TableCell>
-                <TableCell>
+                <TableCell className="text-right">
                   <Money amountCents={refund.amount} currency={refund.currency} />
                 </TableCell>
                 <TableCell className="text-muted-foreground max-w-64 truncate">
@@ -97,27 +95,16 @@ export function RefundsDashboardScreen({
                 </TableCell>
               </TableRow>
             ))}
-            {rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-muted-foreground py-8 text-center">
-                  No refund requests yet.
-                </TableCell>
-              </TableRow>
-            ) : null}
           </TableBody>
         </Table>
+        {rows.length === 0 ? (
+          <EmptyState
+            title="No refund requests yet"
+            hint="Submitted requests appear here for review and approval."
+            className="m-4"
+          />
+        ) : null}
       </div>
     </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-2xl tabular-nums">{value}</CardTitle>
-      </CardHeader>
-    </Card>
   );
 }

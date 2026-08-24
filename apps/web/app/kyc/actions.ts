@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { put } from "@vercel/blob";
 
-import { claimCase, decideCase, escalateCase, uploadDocument } from "@repo/app-kyc";
+import { claimCase, createCase, decideCase, escalateCase, uploadDocument } from "@repo/app-kyc";
+import type { NewKycCaseInput } from "@repo/app-kyc/screens";
 import { hasRole, toActionResult, type ActionResult } from "@repo/core";
 
 import { getActor } from "@/lib/actor";
@@ -18,6 +19,12 @@ async function ctx() {
 function revalidate(caseId: string) {
   revalidatePath("/kyc");
   revalidatePath(`/kyc/${caseId}`);
+}
+
+export async function createKycCaseAction(input: NewKycCaseInput): Promise<ActionResult> {
+  const result = await toActionResult(createCase(await ctx(), input));
+  revalidatePath("/kyc");
+  return result;
 }
 
 export async function claimCaseAction(caseId: string): Promise<ActionResult> {

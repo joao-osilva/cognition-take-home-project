@@ -1,17 +1,23 @@
-import { ClerkProvider, UserButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
+import { Geist_Mono, Inter } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 
 import { hasRole } from "@repo/core";
 import { Toaster } from "@repo/ui";
 
+import { AppShell } from "@/components/app-shell";
 import { NotificationBell } from "@/components/notification-bell";
-import { SidebarNav, type NavItem } from "@/components/sidebar-nav";
+import type { NavItem } from "@/components/sidebar-nav";
 import { getSessionUser } from "@/lib/actor";
 import { getNotificationsForUser } from "@/lib/notifications";
 import { apps } from "@/lib/apps";
 
 import "./globals.css";
+
+const interSans = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
   title: "Internal Tools",
@@ -20,12 +26,15 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const user = await getSessionUser();
+  const fontClasses = `${interSans.variable} ${geistMono.variable} font-sans`;
 
   if (!user) {
     return (
-      <html lang="en">
-        <body className="min-h-screen antialiased">
-          <ClerkProvider>{children}</ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${fontClasses} min-h-screen antialiased`}>
+          <ThemeProvider attribute="class" disableTransitionOnChange>
+            <ClerkProvider>{children}</ClerkProvider>
+          </ThemeProvider>
         </body>
       </html>
     );
@@ -33,52 +42,43 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   const { items: notificationItems, unreadCount } = await getNotificationsForUser(user.id);
 
+  const visibleApps = apps.filter((app) => hasRole(user, app.requiredRole));
+  const isAdmin = hasRole(user, "admin");
   const navItems: NavItem[] = [
-    { href: "/", label: "Home" },
-    { href: "/inbox", label: "Inbox" },
-    ...apps
-      .filter((app) => hasRole(user, app.requiredRole))
-      .map((app) => ({ href: app.basePath, label: app.name })),
-    ...(hasRole(user, "admin")
+    { href: "/", label: "Home", icon: "home" },
+    { href: "/inbox", label: "Inbox", icon: "inbox", badge: unreadCount || undefined },
+    ...visibleApps.map((app, i) => ({
+      href: app.basePath,
+      label: app.name,
+      icon: app.id,
+      separator: i === 0,
+    })),
+    ...(isAdmin
       ? [
-          { href: "/audit", label: "Audit" },
-          { href: "/admin", label: "Admin" },
+          { href: "/audit", label: "Audit", icon: "audit", separator: true },
+          { href: "/admin", label: "Admin", icon: "admin" },
         ]
       : []),
   ];
 
   return (
-    <html lang="en">
-      <body className="min-h-screen antialiased">
-        <ClerkProvider>
-          <div className="flex min-h-screen">
-            <aside className="bg-sidebar border-sidebar-border fixed inset-y-0 flex w-60 flex-col border-r">
-              <div className="px-5 py-5">
-                <div className="text-sidebar-foreground text-sm font-semibold tracking-wide">
-                  Internal Tools
-                </div>
-                <div className="text-sidebar-foreground/50 text-xs">fintech ops platform</div>
-              </div>
-              <div className="flex-1 px-2">
-                <SidebarNav items={navItems} />
-              </div>
-              <div className="border-sidebar-border flex items-center gap-3 border-t px-4 py-3">
-                <UserButton />
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${fontClasses} min-h-screen antialiased`}>
+        <ThemeProvider attribute="class" disableTransitionOnChange>
+          <ClerkProvider>
+            <AppShell
+              navItems={navItems}
+              userName={user.name}
+              userRoles={user.roles}
+              bell={
                 <NotificationBell notifications={notificationItems} unreadCount={unreadCount} />
-                <div className="min-w-0">
-                  <div className="text-sidebar-foreground truncate text-sm font-medium">
-                    {user.name}
-                  </div>
-                  <div className="text-sidebar-foreground/50 truncate text-xs">
-                    {user.roles.join(", ") || "no roles"}
-                  </div>
-                </div>
-              </div>
-            </aside>
-            <main className="ml-60 flex-1 px-8 py-8">{children}</main>
-          </div>
-          <Toaster />
-        </ClerkProvider>
+              }
+            >
+              {children}
+            </AppShell>
+            <Toaster />
+          </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

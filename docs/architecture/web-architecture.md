@@ -8,12 +8,12 @@ Power Apps acts as a "marketplace": a portal hosting many apps on shared infrast
 
 ## Options considered
 
-| Option | Shape | Verdict |
-|---|---|---|
-| **A. Single app, file-based routes + domain packages** | Pages live in the host (`apps/web`), domain logic in `packages/apps/*` | **Chosen** |
-| B. Manifest + registry | Apps export a typed `AppManifest`; host uses a catch-all route + registry to auto-wire launcher/nav/roles | Runner-up |
-| C. DB-driven marketplace | Apps registered/enabled at runtime from the admin UI; dynamic loading | Rejected |
-| D. Next.js app per tool | Each tool is its own Vercel deployment + a portal app | Rejected (for now) |
+| Option                                                 | Shape                                                                                                     | Verdict            |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------ |
+| **A. Single app, file-based routes + domain packages** | Pages live in the host (`apps/web`), domain logic in `packages/apps/*`                                    | **Chosen**         |
+| B. Manifest + registry                                 | Apps export a typed `AppManifest`; host uses a catch-all route + registry to auto-wire launcher/nav/roles | Runner-up          |
+| C. DB-driven marketplace                               | Apps registered/enabled at runtime from the admin UI; dynamic loading                                     | Rejected           |
+| D. Next.js app per tool                                | Each tool is its own Vercel deployment + a portal app                                                     | Rejected (for now) |
 
 ## Why A
 
@@ -42,6 +42,10 @@ packages/
   apps/flags/                   #   schema slice, seed, inngest functions
 tooling/generators/app/         # `pnpm gen:app <id>` scaffold
 ```
+
+## Design system
+
+`packages/ui` carries the visual identity on top of shadcn/ui: warm cream neutrals with an ink-black primary and pill-shaped buttons (light + dark themes via `next-themes`), Inter/Geist Mono (mono for money, IDs, timestamps), and shared primitives — `StatusBadge` (semantic tones + dot indicator), `StatCard`, `EmptyState`, `Skeleton`, `PageHeader` (with breadcrumbs), `AuditTrail` timeline, and date formatters. The host provides the responsive shell (`AppShell`): warm-neutral sidebar (a deeper cream shade than the content area) with icons and an ink pill for the active item on desktop, sheet navigation on mobile, sticky header with notification bell and theme toggle. Apps compose these primitives instead of styling ad hoc.
 
 ## New-app journey (end-to-end)
 

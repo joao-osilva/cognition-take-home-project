@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 
 import type { ActionResult } from "@repo/core";
 import {
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -12,7 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  EmptyState,
   Input,
+  StatusBadge,
   Table,
   TableBody,
   TableCell,
@@ -48,47 +49,49 @@ export function ApiKeysTable({
       <div className="flex justify-end">
         <CreateKeyDialog onCreate={onCreate} />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Key</TableHead>
-            <TableHead>Created by</TableHead>
-            <TableHead>Created at</TableHead>
-            <TableHead>Last used</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-24" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {keys.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={7} className="text-muted-foreground text-center">
-                No API keys yet — create one to let external services read feature flags.
-              </TableCell>
-            </TableRow>
-          )}
-          {keys.map((key) => (
-            <TableRow key={key.id}>
-              <TableCell className="font-medium">{key.name}</TableCell>
-              <TableCell className="font-mono text-sm">{key.prefix}…</TableCell>
-              <TableCell className="text-muted-foreground">{key.createdBy}</TableCell>
-              <TableCell className="text-muted-foreground">{key.createdAt}</TableCell>
-              <TableCell className="text-muted-foreground">{key.lastUsedAt ?? "never"}</TableCell>
-              <TableCell>
-                {key.revokedAt ? (
-                  <Badge variant="outline">revoked</Badge>
-                ) : (
-                  <Badge variant="secondary">active</Badge>
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                {!key.revokedAt && <RevokeButton id={key.id} name={key.name} onRevoke={onRevoke} />}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      {keys.length === 0 ? (
+        <EmptyState
+          title="No API keys yet"
+          hint="Create one to let external services read feature flags via /api/flags."
+        />
+      ) : (
+        <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Key</TableHead>
+                <TableHead>Created by</TableHead>
+                <TableHead>Created at</TableHead>
+                <TableHead>Last used</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-24" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {keys.map((key) => (
+                <TableRow key={key.id}>
+                  <TableCell className="font-medium">{key.name}</TableCell>
+                  <TableCell className="font-mono text-sm">{key.prefix}…</TableCell>
+                  <TableCell className="text-muted-foreground">{key.createdBy}</TableCell>
+                  <TableCell className="text-muted-foreground">{key.createdAt}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {key.lastUsedAt ?? "never"}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={key.revokedAt ? "revoked" : "active"} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {!key.revokedAt && (
+                      <RevokeButton id={key.id} name={key.name} onRevoke={onRevoke} />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
@@ -124,7 +127,14 @@ function CreateKeyDialog({
         }
       }}
     >
-      <Button size="sm" onClick={() => setOpen(true)}>
+      <Button
+        size="sm"
+        onClick={() => {
+          setName("");
+          setCreatedKey(null);
+          setOpen(true);
+        }}
+      >
         Create key
       </Button>
       <DialogContent>
@@ -150,7 +160,15 @@ function CreateKeyDialog({
               >
                 Copy
               </Button>
-              <Button onClick={() => setOpen(false)}>Done</Button>
+              <Button
+                onClick={() => {
+                  setCreatedKey(null);
+                  setName("");
+                  setOpen(false);
+                }}
+              >
+                Done
+              </Button>
             </DialogFooter>
           </>
         ) : (

@@ -1,9 +1,53 @@
 import { z } from "zod";
 
-import { defineAction, requireRole, ForbiddenError } from "@repo/core";
+import { defineAction, getConfig, requireRole, ForbiddenError } from "@repo/core";
 import { eq } from "@repo/db/orm";
+import { customers } from "@repo/db/schema/core";
 
 import { kycCases, kycDocuments } from "./schema";
+
+export const createCase = defineAction({
+  role: "kyc:operator",
+  input: z.object({
+    customerName: z.string().min(2).max(120),
+    customerEmail: z.string().email(),
+    riskLevel: z.enum(["low", "medium", "high"]),
+  }),
+  audit: (input, result: { caseId: string }) => ({
+    action: "kyc.case.created",
+    entityType: "kyc_case",
+    entityId: result.caseId,
+    metadata: { customerEmail: input.customerEmail, riskLevel: input.riskLevel },
+  }),
+  handler: async ({ db }, input) => {
+    const existing = await db
+      .select({ id: customers.id })
+      .from(customers)
+      .where(eq(customers.email, input.customerEmail))
+      .limit(1);
+    let customerId = existing[0]?.id;
+    if (!customerId) {
+      const inserted = await db
+        .insert(customers)
+        .values({ name: input.customerName, email: input.customerEmail })
+        .returning({ id: customers.id });
+      customerId = inserted[0]?.id;
+      if (!customerId) throw new Error("Failed to create customer");
+    }
+    const slaHours = await getConfig(db, "kyc.sla_hours", 48);
+    const rows = await db
+      .insert(kycCases)
+      .values({
+        customerId,
+        riskLevel: input.riskLevel,
+        slaDueAt: new Date(Date.now() + slaHours * 3_600_000),
+      })
+      .returning({ id: kycCases.id });
+    const row = rows[0];
+    if (!row) throw new Error("Failed to create case");
+    return { caseId: row.id };
+  },
+});
 
 export const claimCase = defineAction({
   role: "kyc:operator",

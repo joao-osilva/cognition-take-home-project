@@ -10,6 +10,7 @@ const KEY_BYTES = 24;
 const KEY_PREFIX = "itk_";
 
 export type ApiKey = typeof platformSchema.apiKeys.$inferSelect;
+export type ApiKeyWithCreator = ApiKey & { createdByName: string | null };
 
 function hashKey(key: string): string {
   return createHash("sha256").update(key).digest("hex");
@@ -42,8 +43,14 @@ export async function revokeApiKeyById(db: Db, id: string): Promise<void> {
   if (rows.length === 0) throw new Error("Key not found or already revoked");
 }
 
-export async function listApiKeys(db: Db): Promise<ApiKey[]> {
-  return db.select().from(platformSchema.apiKeys).orderBy(desc(platformSchema.apiKeys.createdAt));
+export async function listApiKeys(db: Db): Promise<ApiKeyWithCreator[]> {
+  const { apiKeys, users } = platformSchema;
+  const rows = await db
+    .select({ apiKey: apiKeys, createdByName: users.name })
+    .from(apiKeys)
+    .leftJoin(users, eq(apiKeys.createdBy, users.id))
+    .orderBy(desc(apiKeys.createdAt));
+  return rows.map(({ apiKey, createdByName }) => ({ ...apiKey, createdByName }));
 }
 
 /** Returns the active key row for a presented key, or null. Touches lastUsedAt. */

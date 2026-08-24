@@ -1,4 +1,5 @@
 import {
+  EmptyState,
   PageHeader,
   StatusBadge,
   Table,
@@ -10,8 +11,11 @@ import {
   cn,
 } from "@repo/ui";
 
+import type { ActionResult } from "@repo/core";
+
 import type { KycCaseRow } from "../queries";
 import { KycFilterBar } from "./filter-bar";
+import { NewCaseDialog, type NewKycCaseInput } from "./new-case-dialog";
 
 function slaLabel(slaDueAt: Date | null): { text: string; overdue: boolean } {
   if (!slaDueAt) return { text: "—", overdue: false };
@@ -23,18 +27,26 @@ function slaLabel(slaDueAt: Date | null): { text: string; overdue: boolean } {
 export function KycQueueScreen({
   cases,
   filters,
+  onCreateCase,
 }: {
   cases: KycCaseRow[];
   filters: { status?: string; riskLevel?: string };
+  onCreateCase?: (input: NewKycCaseInput) => Promise<ActionResult>;
 }) {
   return (
     <div>
       <PageHeader
         title="KYC Review Queue"
         description="Review, decide, and escalate customer KYC cases"
+        actions={onCreateCase ? <NewCaseDialog onCreate={onCreateCase} /> : undefined}
       />
-      <KycFilterBar status={filters.status} riskLevel={filters.riskLevel} />
-      <div className="rounded-lg border">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <KycFilterBar status={filters.status} riskLevel={filters.riskLevel} />
+        <span className="text-muted-foreground text-xs">
+          {cases.length} case{cases.length === 1 ? "" : "s"}
+        </span>
+      </div>
+      <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>
@@ -50,10 +62,15 @@ export function KycQueueScreen({
               const sla = slaLabel(kycCase.slaDueAt);
               const open = ["pending", "in_review", "escalated"].includes(kycCase.status);
               return (
-                <TableRow key={kycCase.id}>
+                <TableRow
+                  key={kycCase.id}
+                  className="hover:bg-muted/50 group relative cursor-pointer transition-colors duration-150"
+                >
                   <TableCell>
-                    <a href={`/kyc/${kycCase.id}`} className="block">
-                      <span className="block font-medium">{customerName}</span>
+                    <a href={`/kyc/${kycCase.id}`} className="block after:absolute after:inset-0">
+                      <span className="group-hover:text-primary block font-medium transition-colors">
+                        {customerName}
+                      </span>
                       <span className="text-muted-foreground block text-xs">{customerEmail}</span>
                     </a>
                   </TableCell>
@@ -66,7 +83,10 @@ export function KycQueueScreen({
                   <TableCell className="text-muted-foreground">{assigneeName ?? "—"}</TableCell>
                   <TableCell
                     className={cn(
-                      open && sla.overdue ? "font-medium text-red-600" : "text-muted-foreground",
+                      "font-mono text-xs tabular-nums",
+                      open && sla.overdue
+                        ? "font-medium text-red-600 dark:text-red-400"
+                        : "text-muted-foreground",
                     )}
                   >
                     {open ? sla.text : "—"}
@@ -74,15 +94,15 @@ export function KycQueueScreen({
                 </TableRow>
               );
             })}
-            {cases.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground py-8 text-center">
-                  No cases match the current filters.
-                </TableCell>
-              </TableRow>
-            ) : null}
           </TableBody>
         </Table>
+        {cases.length === 0 ? (
+          <EmptyState
+            title="No cases match the current filters"
+            hint="Try clearing the status or risk filters."
+            className="m-4"
+          />
+        ) : null}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { queryNotifications } from "@repo/core";
-import { PageHeader } from "@repo/ui";
+import { PageHeader, formatRelativeTime } from "@repo/ui";
 
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
@@ -42,7 +42,7 @@ export default async function InboxPage({
     message: formatMessage(n),
     href: notificationHref(n),
     read: n.readAt !== null,
-    createdAt: n.createdAt.toLocaleString("en-US"),
+    createdAt: formatRelativeTime(n.createdAt),
   }));
 
   return (
