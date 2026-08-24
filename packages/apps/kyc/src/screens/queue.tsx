@@ -11,8 +11,11 @@ import {
   cn,
 } from "@repo/ui";
 
+import type { ActionResult } from "@repo/core";
+
 import type { KycCaseRow } from "../queries";
 import { KycFilterBar } from "./filter-bar";
+import { NewCaseDialog, type NewKycCaseInput } from "./new-case-dialog";
 
 function slaLabel(slaDueAt: Date | null): { text: string; overdue: boolean } {
   if (!slaDueAt) return { text: "—", overdue: false };
@@ -24,15 +27,18 @@ function slaLabel(slaDueAt: Date | null): { text: string; overdue: boolean } {
 export function KycQueueScreen({
   cases,
   filters,
+  onCreateCase,
 }: {
   cases: KycCaseRow[];
   filters: { status?: string; riskLevel?: string };
+  onCreateCase?: (input: NewKycCaseInput) => Promise<ActionResult>;
 }) {
   return (
     <div>
       <PageHeader
         title="KYC Review Queue"
         description="Review, decide, and escalate customer KYC cases"
+        actions={onCreateCase ? <NewCaseDialog onCreate={onCreateCase} /> : undefined}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <KycFilterBar status={filters.status} riskLevel={filters.riskLevel} />

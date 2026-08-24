@@ -50,7 +50,7 @@ export default async function AdminPage() {
             entries={config.map((entry) => ({
               key: entry.key,
               valueJson: JSON.stringify(entry.value),
-              updatedBy: entry.updatedBy,
+              updatedBy: entry.updatedByName ?? entry.updatedBy,
               updatedAt: formatDateTime(entry.updatedAt),
             }))}
             onUpdate={updateConfigAction}
@@ -62,7 +62,7 @@ export default async function AdminPage() {
               id: key.id,
               name: key.name,
               prefix: key.prefix,
-              createdBy: key.createdBy,
+              createdBy: key.createdByName ?? key.createdBy,
               createdAt: formatDate(key.createdAt) ?? "",
               lastUsedAt: formatDate(key.lastUsedAt),
               revokedAt: formatDate(key.revokedAt),

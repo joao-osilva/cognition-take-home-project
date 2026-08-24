@@ -127,7 +127,14 @@ function CreateKeyDialog({
         }
       }}
     >
-      <Button size="sm" onClick={() => setOpen(true)}>
+      <Button
+        size="sm"
+        onClick={() => {
+          setName("");
+          setCreatedKey(null);
+          setOpen(true);
+        }}
+      >
         Create key
       </Button>
       <DialogContent>
@@ -153,7 +160,15 @@ function CreateKeyDialog({
               >
                 Copy
               </Button>
-              <Button onClick={() => setOpen(false)}>Done</Button>
+              <Button
+                onClick={() => {
+                  setCreatedKey(null);
+                  setName("");
+                  setOpen(false);
+                }}
+              >
+                Done
+              </Button>
             </DialogFooter>
           </>
         ) : (

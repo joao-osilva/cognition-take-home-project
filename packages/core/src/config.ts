@@ -6,11 +6,18 @@ export interface ConfigEntry {
   key: string;
   value: unknown;
   updatedBy: string;
+  updatedByName: string | null;
   updatedAt: Date;
 }
 
 export async function listConfig(db: Db): Promise<ConfigEntry[]> {
-  return db.select().from(platformSchema.appConfig).orderBy(platformSchema.appConfig.key);
+  const { appConfig, users } = platformSchema;
+  const rows = await db
+    .select({ entry: appConfig, updatedByName: users.name })
+    .from(appConfig)
+    .leftJoin(users, eq(appConfig.updatedBy, users.id))
+    .orderBy(appConfig.key);
+  return rows.map(({ entry, updatedByName }) => ({ ...entry, updatedByName }));
 }
 
 export async function setConfig(
