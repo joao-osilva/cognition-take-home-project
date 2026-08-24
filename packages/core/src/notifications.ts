@@ -62,6 +62,60 @@ export async function markNotificationsRead(
     .where(and(...conditions));
 }
 
+export interface NotificationQuery {
+  unreadOnly?: boolean;
+  type?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface NotificationPage {
+  rows: NotificationRow[];
+  total: number;
+  types: string[];
+}
+
+export async function queryNotifications(
+  db: Db,
+  recipientId: string,
+  query: NotificationQuery = {},
+): Promise<NotificationPage> {
+  const pageSize = query.pageSize ?? 25;
+  const page = Math.max(query.page ?? 1, 1);
+  const { notifications } = platformSchema;
+
+  const conditions = [
+    eq(notifications.recipientId, recipientId),
+    query.unreadOnly ? isNull(notifications.readAt) : undefined,
+    query.type ? eq(notifications.type, query.type) : undefined,
+  ].filter((c) => c !== undefined);
+  const where = and(...conditions);
+
+  const [rows, totals, typeRows] = await Promise.all([
+    db
+      .select()
+      .from(notifications)
+      .where(where)
+      .orderBy(desc(notifications.createdAt))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(notifications)
+      .where(where),
+    db
+      .selectDistinct({ type: notifications.type })
+      .from(notifications)
+      .where(eq(notifications.recipientId, recipientId)),
+  ]);
+
+  return {
+    rows,
+    total: totals[0]?.count ?? 0,
+    types: typeRows.map((r) => r.type).sort(),
+  };
+}
+
 /** Whether a notification of this type with a payload containing `payloadMatch`
  * already exists — used by background jobs to stay idempotent. */
 export async function hasNotification(

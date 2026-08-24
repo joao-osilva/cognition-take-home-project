@@ -66,6 +66,18 @@ export function computeMetrics(rows: RefundRow[]): RefundMetrics {
   };
 }
 
+/** System-side settlement: moves an approved refund to `processed`. Called by
+ * the background settlement job, not by user actions. Returns the settled row,
+ * or undefined when the refund is missing or not in `approved`. */
+export async function settleRefund(db: Db, refundId: string): Promise<RefundRequest | undefined> {
+  const rows = await db
+    .update(refundRequests)
+    .set({ status: "processed", updatedAt: new Date() })
+    .where(and(eq(refundRequests.id, refundId), eq(refundRequests.status, "approved")))
+    .returning();
+  return rows[0];
+}
+
 export async function listRefundableTransactions(db: Db): Promise<RefundableTransaction[]> {
   return db
     .select({

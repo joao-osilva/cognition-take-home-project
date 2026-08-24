@@ -77,7 +77,7 @@ export const decideRefund = defineAction({
     decision: z.enum(["approved", "rejected"]),
     reason: z.string().min(3),
   }),
-  audit: (input, result: { refundId: string }) => ({
+  audit: (input, result: { refundId: string; requestedBy: string }) => ({
     action: `refunds.${input.decision}`,
     entityType: "refund_request",
     entityId: result.refundId,
@@ -105,6 +105,6 @@ export const decideRefund = defineAction({
       type: `refund.${input.decision}`,
       payload: { refundId: approval.entityId, reason: input.reason },
     });
-    return { refundId: approval.entityId };
+    return { refundId: approval.entityId, requestedBy: approval.requestedBy };
   },
 });

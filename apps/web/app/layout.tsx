@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   const navItems: NavItem[] = [
     { href: "/", label: "Home" },
+    { href: "/inbox", label: "Inbox" },
     ...apps
       .filter((app) => hasRole(user, app.requiredRole))
       .map((app) => ({ href: app.basePath, label: app.name })),

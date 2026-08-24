@@ -49,11 +49,27 @@ New sign-ups default to `admin` (demo convenience — see
 bootstrapping is needed.
 
 In-app notifications surface in the bell at the bottom of the sidebar (unread
-count + mark-all-read). They're written by domain actions (e.g. refund
-decisions) and by Inngest background functions served at `/api/inngest` — an
-hourly `kyc-sla-reminder` sweep flags KYC cases past their SLA. Locally, set
-`INNGEST_DEV=1` and run `npx inngest-cli dev` to execute functions; on Vercel
-the Inngest integration provides the keys and registers the app on deploy.
+count + mark-all-read) and in the full `/inbox` page, where every user can
+track their history with status/type filters, per-item mark-read, and deep
+links to the relevant case or dashboard. Notifications are written by domain
+actions (e.g. refund decisions) and by Inngest functions served at
+`/api/inngest`:
+
+- `kyc-sla-reminder` (hourly cron) — flags KYC cases past their SLA
+- `refund-settlement` (on `refund.approved`) — simulates the settlement leg,
+  moves the refund to `processed`, and notifies the requester
+- `approval-pending-reminder` (hourly cron) — nudges approvers about
+  maker-checker requests older than `approvals.reminder_hours` (config)
+- `kyc-decision-fanout` (on `kyc.case.decided`) — tells the assignee when
+  someone else decides their case
+- `kyc-escalation-fanout` (on `kyc.case.escalated`) — alerts all
+  `kyc:approver`s that an escalated case awaits a decision
+- `daily-ops-digest` (08:00 UTC cron) — one summary per approver/admin of
+  overdue KYC cases and pending approvals
+
+Locally, set `INNGEST_DEV=1` and run `npx inngest-cli dev` to execute
+functions; on Vercel the Inngest integration provides the keys and registers
+the app on deploy.
 
 KYC documents are stored in a private Vercel Blob store (`BLOB_READ_WRITE_TOKEN`,
 injected by the Vercel Blob integration). Operators upload from the case detail

@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -83,6 +84,15 @@ export function NotificationBell({
               ))}
             </ul>
           )}
+        </div>
+        <div className="border-t px-4 py-2 text-center">
+          <Link
+            href="/inbox"
+            className="text-primary text-sm hover:underline"
+            onClick={() => setOpen(false)}
+          >
+            View all in Inbox
+          </Link>
         </div>
       </PopoverContent>
     </Popover>
