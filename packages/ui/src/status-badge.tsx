@@ -39,6 +39,8 @@ const STATUS_TONES: Record<string, Tone> = {
   processed: "success",
   settled: "success",
   on: "success",
+  active: "success",
+  revoked: "neutral",
   rejected: "danger",
   off: "neutral",
   percentage: "accent",

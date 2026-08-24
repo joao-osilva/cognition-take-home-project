@@ -36,30 +36,32 @@ export function ConfigTable({
   onUpdate: (key: string, valueJson: string) => Promise<ActionResult>;
 }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Key</TableHead>
-          <TableHead>Value</TableHead>
-          <TableHead>Updated by</TableHead>
-          <TableHead>Updated at</TableHead>
-          <TableHead className="w-24" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {entries.map((entry) => (
-          <TableRow key={entry.key}>
-            <TableCell className="font-medium">{entry.key}</TableCell>
-            <TableCell className="font-mono text-sm">{entry.valueJson}</TableCell>
-            <TableCell className="text-muted-foreground">{entry.updatedBy}</TableCell>
-            <TableCell className="text-muted-foreground">{entry.updatedAt}</TableCell>
-            <TableCell className="text-right">
-              <EditConfigDialog entry={entry} onUpdate={onUpdate} />
-            </TableCell>
+    <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Key</TableHead>
+            <TableHead>Value</TableHead>
+            <TableHead>Updated by</TableHead>
+            <TableHead>Updated at</TableHead>
+            <TableHead className="w-24" />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {entries.map((entry) => (
+            <TableRow key={entry.key}>
+              <TableCell className="font-medium">{entry.key}</TableCell>
+              <TableCell className="font-mono text-sm">{entry.valueJson}</TableCell>
+              <TableCell className="text-muted-foreground">{entry.updatedBy}</TableCell>
+              <TableCell className="text-muted-foreground">{entry.updatedAt}</TableCell>
+              <TableCell className="text-right">
+                <EditConfigDialog entry={entry} onUpdate={onUpdate} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

@@ -45,7 +45,7 @@ tooling/generators/app/         # `pnpm gen:app <id>` scaffold
 
 ## Design system
 
-`packages/ui` carries the visual identity on top of shadcn/ui: warm cream neutrals with an ink-black primary and pill-shaped buttons (light + dark themes via `next-themes`), Inter/Geist Mono (mono for money, IDs, timestamps), and shared primitives — `StatusBadge` (semantic tones + dot indicator), `StatCard`, `EmptyState`, `Skeleton`, `PageHeader` (with breadcrumbs), `AuditTrail` timeline, and date formatters. The host provides the responsive shell (`AppShell`): dark ink sidebar with accent rail + icons on desktop, sheet navigation on mobile, sticky header with notification bell and theme toggle. Apps compose these primitives instead of styling ad hoc.
+`packages/ui` carries the visual identity on top of shadcn/ui: warm cream neutrals with an ink-black primary and pill-shaped buttons (light + dark themes via `next-themes`), Inter/Geist Mono (mono for money, IDs, timestamps), and shared primitives — `StatusBadge` (semantic tones + dot indicator), `StatCard`, `EmptyState`, `Skeleton`, `PageHeader` (with breadcrumbs), `AuditTrail` timeline, and date formatters. The host provides the responsive shell (`AppShell`): warm-neutral sidebar (a deeper cream shade than the content area) with icons and an ink pill for the active item on desktop, sheet navigation on mobile, sticky header with notification bell and theme toggle. Apps compose these primitives instead of styling ad hoc.
 
 ## New-app journey (end-to-end)
 
