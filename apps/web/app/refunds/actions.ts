@@ -3,13 +3,18 @@
 import { revalidatePath } from "next/cache";
 
 import { decideRefund, requestRefund } from "@repo/app-refunds";
-import { toActionResult, type ActionResult } from "@repo/core";
+import { type ActionResult } from "@repo/core";
 
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
+import { sendEvent } from "@/lib/inngest";
 
 async function ctx() {
   return { db: getDb(), actor: await getActor() };
+}
+
+function toError(err: unknown): ActionResult {
+  return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
 }
 
 export async function requestRefundAction(
@@ -17,9 +22,21 @@ export async function requestRefundAction(
   amount: number,
   reason: string,
 ): Promise<ActionResult> {
-  const result = await toActionResult(
-    requestRefund(await ctx(), { transactionId, amount, reason }),
-  );
+  const context = await ctx();
+  let result: ActionResult;
+  try {
+    const refund = await requestRefund(context, { transactionId, amount, reason });
+    if (refund.status === "approved") {
+      // Below-threshold refunds are auto-approved; hand them to settlement.
+      await sendEvent("refund.approved", {
+        refundId: refund.refundId,
+        requestedBy: context.actor.id,
+      });
+    }
+    result = { ok: true };
+  } catch (err) {
+    result = toError(err);
+  }
   revalidatePath("/refunds");
   return result;
 }
@@ -29,7 +46,20 @@ export async function decideRefundAction(
   decision: "approved" | "rejected",
   reason: string,
 ): Promise<ActionResult> {
-  const result = await toActionResult(decideRefund(await ctx(), { approvalId, decision, reason }));
+  const context = await ctx();
+  let result: ActionResult;
+  try {
+    const refund = await decideRefund(context, { approvalId, decision, reason });
+    if (decision === "approved") {
+      await sendEvent("refund.approved", {
+        refundId: refund.refundId,
+        requestedBy: refund.requestedBy,
+      });
+    }
+    result = { ok: true };
+  } catch (err) {
+    result = toError(err);
+  }
   revalidatePath("/refunds");
   return result;
 }

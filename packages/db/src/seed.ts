@@ -64,6 +64,7 @@ async function main() {
   await db.insert(appConfig).values([
     { key: "refunds.approval_threshold", value: 100000, updatedBy: "seed" },
     { key: "kyc.sla_hours", value: 48, updatedBy: "seed" },
+    { key: "approvals.reminder_hours", value: 4, updatedBy: "seed" },
   ]);
 
   const now = Date.now();

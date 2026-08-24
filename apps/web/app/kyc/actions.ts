@@ -9,6 +9,7 @@ import { hasRole, toActionResult, type ActionResult } from "@repo/core";
 
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
+import { sendEvent } from "@/lib/inngest";
 
 async function ctx() {
   return { db: getDb(), actor: await getActor() };
@@ -30,13 +31,21 @@ export async function decideCaseAction(
   decision: "approved" | "rejected",
   reason: string,
 ): Promise<ActionResult> {
-  const result = await toActionResult(decideCase(await ctx(), { caseId, decision, reason }));
+  const context = await ctx();
+  const result = await toActionResult(decideCase(context, { caseId, decision, reason }));
+  if (result.ok) {
+    await sendEvent("kyc.case.decided", { caseId, decision, decidedBy: context.actor.id });
+  }
   revalidate(caseId);
   return result;
 }
 
 export async function escalateCaseAction(caseId: string, reason: string): Promise<ActionResult> {
-  const result = await toActionResult(escalateCase(await ctx(), { caseId, reason }));
+  const context = await ctx();
+  const result = await toActionResult(escalateCase(context, { caseId, reason }));
+  if (result.ok) {
+    await sendEvent("kyc.case.escalated", { caseId, reason, escalatedBy: context.actor.id });
+  }
   revalidate(caseId);
   return result;
 }

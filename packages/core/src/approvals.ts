@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "@repo/db/orm";
+import { and, eq, isNull, lt } from "@repo/db/orm";
 
 import { platformSchema, type Db } from "@repo/db";
 
@@ -100,6 +100,20 @@ export async function decideApproval<T extends ApprovableEntity>(
 }
 
 export type ApprovalRow = typeof platformSchema.approvals.$inferSelect;
+
+/** Pending (undecided) approvals requested before `cutoff` — used by
+ * background reminder jobs. */
+export async function listStalePendingApprovals(db: Db, cutoff: Date): Promise<ApprovalRow[]> {
+  return db
+    .select()
+    .from(platformSchema.approvals)
+    .where(
+      and(
+        isNull(platformSchema.approvals.decision),
+        lt(platformSchema.approvals.requestedAt, cutoff),
+      ),
+    );
+}
 
 export async function getPendingApproval(
   db: Db,
