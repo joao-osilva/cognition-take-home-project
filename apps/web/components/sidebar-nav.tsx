@@ -49,24 +49,23 @@ export function SidebarNav({ items, onNavigate }: { items: NavItem[]; onNavigate
               href={item.href}
               onClick={onNavigate}
               className={cn(
-                "relative flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+                "relative flex items-center gap-2.5 rounded-full px-3.5 py-2 text-sm transition-colors duration-150",
                 active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
               )}
             >
-              {active ? (
-                <span className="bg-sidebar-primary absolute inset-y-1.5 left-0 w-0.5 rounded-full" />
-              ) : null}
-              {Icon ? (
-                <Icon
-                  className={cn("size-4 shrink-0", active && "text-sidebar-primary")}
-                  strokeWidth={1.75}
-                />
-              ) : null}
+              {Icon ? <Icon className="size-4 shrink-0" strokeWidth={1.75} /> : null}
               <span className="min-w-0 flex-1 truncate">{item.label}</span>
               {item.badge ? (
-                <span className="bg-sidebar-primary text-sidebar-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] leading-none font-semibold">
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 py-0.5 text-[10px] leading-none font-semibold",
+                    active
+                      ? "bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground"
+                      : "bg-sidebar-primary text-sidebar-primary-foreground",
+                  )}
+                >
                   {item.badge > 99 ? "99+" : item.badge}
                 </span>
               ) : null}
