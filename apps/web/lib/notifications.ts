@@ -3,6 +3,25 @@ import { countUnreadNotifications, listNotifications, type NotificationRow } fro
 import type { NotificationItem } from "@/components/notification-bell";
 import { getDb } from "@/lib/db";
 
+const TYPE_LABELS: Record<string, string> = {
+  "kyc.sla_overdue": "KYC SLA overdue",
+  "kyc.case.decided": "KYC case decided",
+  "kyc.case.escalated": "KYC case escalated",
+  "refund.approved": "Refund approved",
+  "refund.rejected": "Refund rejected",
+  "refund.settled": "Refund settled",
+  "approval.pending_reminder": "Approval reminder",
+  "ops.daily_digest": "Daily digest",
+};
+
+/** Human-readable label for a notification type key (e.g. "kyc.sla_overdue" → "KYC SLA overdue"). */
+export function notificationTypeLabel(type: string): string {
+  const known = TYPE_LABELS[type];
+  if (known) return known;
+  const words = type.replace(/[._]/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
 export function formatMessage(n: NotificationRow): string {
   const payload = (n.payload ?? {}) as Record<string, unknown>;
   const customer = String(payload["customerName"] ?? "a customer");
@@ -24,7 +43,7 @@ export function formatMessage(n: NotificationRow): string {
     case "ops.daily_digest":
       return `Daily digest: ${String(payload["overdueKyc"] ?? 0)} overdue KYC case(s), ${String(payload["pendingApprovals"] ?? 0)} pending approval(s)`;
     default:
-      return n.type;
+      return notificationTypeLabel(n.type);
   }
 }
 

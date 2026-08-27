@@ -12,12 +12,12 @@ import {
   TableRow,
 } from "@repo/ui";
 
+import { Pagination } from "@/components/pagination";
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
 import { NoAccess } from "@/lib/guard";
 
 import { AuditFilters } from "./filters";
-import { Pagination } from "./pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -103,7 +103,7 @@ export default async function AuditPage({
           />
         ) : null}
       </div>
-      <Pagination page={page} totalPages={totalPages} total={result.total} />
+      <Pagination page={page} totalPages={totalPages} total={result.total} noun="event" />
     </div>
   );
 }

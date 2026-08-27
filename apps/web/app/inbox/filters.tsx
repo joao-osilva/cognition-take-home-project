@@ -10,7 +10,7 @@ export function InboxFilters({
   types,
   current,
 }: {
-  types: string[];
+  types: { value: string; label: string }[];
   current: { status?: string; type?: string };
 }) {
   const router = useRouter();
@@ -35,7 +35,7 @@ export function InboxFilters({
         value={current.status ?? ALL}
         onValueChange={(value) => apply({ status: value === ALL ? undefined : value })}
       >
-        <SelectTrigger className="w-40">
+        <SelectTrigger className="w-40" aria-label="Filter by status">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -47,14 +47,14 @@ export function InboxFilters({
         value={current.type ?? ALL}
         onValueChange={(value) => apply({ type: value === ALL ? undefined : value })}
       >
-        <SelectTrigger className="w-56">
+        <SelectTrigger className="w-56" aria-label="Filter by type">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL}>All types</SelectItem>
           {types.map((type) => (
-            <SelectItem key={type} value={type}>
-              {type}
+            <SelectItem key={type.value} value={type.value}>
+              {type.label}
             </SelectItem>
           ))}
         </SelectContent>

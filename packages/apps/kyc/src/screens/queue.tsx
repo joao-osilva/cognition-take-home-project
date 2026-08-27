@@ -26,13 +26,16 @@ function slaLabel(slaDueAt: Date | null): { text: string; overdue: boolean } {
 
 export function KycQueueScreen({
   cases,
+  total,
   filters,
   onCreateCase,
 }: {
   cases: KycCaseRow[];
+  total?: number;
   filters: { status?: string; riskLevel?: string };
   onCreateCase?: (input: NewKycCaseInput) => Promise<ActionResult>;
 }) {
+  const caseCount = total ?? cases.length;
   return (
     <div>
       <PageHeader
@@ -43,7 +46,7 @@ export function KycQueueScreen({
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <KycFilterBar status={filters.status} riskLevel={filters.riskLevel} />
         <span className="text-muted-foreground text-xs">
-          {cases.length} case{cases.length === 1 ? "" : "s"}
+          {caseCount} case{caseCount === 1 ? "" : "s"}
         </span>
       </div>
       <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
