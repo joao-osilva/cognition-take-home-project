@@ -2,9 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 
-import { put } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 
-import { claimCase, createCase, decideCase, escalateCase, uploadDocument } from "@repo/app-kyc";
+import {
+  claimCase,
+  createCase,
+  decideCase,
+  escalateCase,
+  releaseCase,
+  removeDocument,
+  uploadDocument,
+} from "@repo/app-kyc";
 import type { NewKycCaseInput } from "@repo/app-kyc/screens";
 import { hasRole, toActionResult, type ActionResult } from "@repo/core";
 
@@ -31,6 +39,33 @@ export async function claimCaseAction(caseId: string): Promise<ActionResult> {
   const result = await toActionResult(claimCase(await ctx(), { caseId }));
   revalidate(caseId);
   return result;
+}
+
+export async function releaseCaseAction(caseId: string): Promise<ActionResult> {
+  const result = await toActionResult(releaseCase(await ctx(), { caseId }));
+  revalidate(caseId);
+  return result;
+}
+
+export async function removeKycDocumentAction(
+  caseId: string,
+  documentId: string,
+): Promise<ActionResult> {
+  let blobUrl: string;
+  try {
+    ({ blobUrl } = await removeDocument(await ctx(), { documentId }));
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
+  }
+  try {
+    await del(blobUrl);
+  } catch (error) {
+    // The DB row and audit entry are the source of truth; a stray blob is
+    // harmless in the private store and can be cleaned up out of band.
+    console.error("Blob delete failed", error);
+  }
+  revalidate(caseId);
+  return { ok: true };
 }
 
 export async function decideCaseAction(

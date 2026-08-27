@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { defineAction, getConfig, requireRole, ForbiddenError } from "@repo/core";
-import { eq } from "@repo/db/orm";
+import { and, eq } from "@repo/db/orm";
 import { customers } from "@repo/db/schema/core";
 
 import { kycCases, kycDocuments } from "./schema";
@@ -70,6 +70,30 @@ export const claimCase = defineAction({
   },
 });
 
+export const releaseCase = defineAction({
+  role: "kyc:operator",
+  input: z.object({ caseId: z.string().uuid() }),
+  audit: (input) => ({
+    action: "kyc.case.released",
+    entityType: "kyc_case",
+    entityId: input.caseId,
+  }),
+  handler: async ({ db, actor }, input) => {
+    const rows = await db.select().from(kycCases).where(eq(kycCases.id, input.caseId)).limit(1);
+    const kycCase = rows[0];
+    if (!kycCase) throw new Error("Case not found");
+    if (kycCase.status !== "in_review") throw new Error("Only in-review cases can be released");
+    if (kycCase.assigneeId !== actor.id) {
+      throw new ForbiddenError("Only the assignee can release this case");
+    }
+    await db
+      .update(kycCases)
+      .set({ status: "pending", assigneeId: null, updatedAt: new Date() })
+      .where(eq(kycCases.id, input.caseId));
+    return { caseId: input.caseId };
+  },
+});
+
 export const uploadDocument = defineAction({
   role: "kyc:operator",
   input: z.object({
@@ -90,6 +114,16 @@ export const uploadDocument = defineAction({
     if (kycCase.status === "approved" || kycCase.status === "rejected") {
       throw new Error("Documents can only be added to open cases");
     }
+    if (input.type !== "other") {
+      const existing = await db
+        .select({ id: kycDocuments.id })
+        .from(kycDocuments)
+        .where(and(eq(kycDocuments.caseId, input.caseId), eq(kycDocuments.type, input.type)))
+        .limit(1);
+      if (existing[0]) {
+        throw new Error("This document type is already uploaded — remove it first to replace it");
+      }
+    }
     const inserted = await db
       .insert(kycDocuments)
       .values({ caseId: input.caseId, type: input.type, blobUrl: input.blobUrl })
@@ -97,6 +131,34 @@ export const uploadDocument = defineAction({
     const doc = inserted[0];
     if (!doc) throw new Error("Failed to record document");
     return { documentId: doc.id, caseId: input.caseId };
+  },
+});
+
+export const removeDocument = defineAction({
+  role: "kyc:operator",
+  input: z.object({ documentId: z.string().uuid() }),
+  audit: (input, result: { caseId: string; type: string; blobUrl: string }) => ({
+    action: "kyc.document.removed",
+    entityType: "kyc_document",
+    entityId: input.documentId,
+    metadata: { caseId: result.caseId, type: result.type },
+  }),
+  handler: async ({ db }, input) => {
+    const docs = await db
+      .select()
+      .from(kycDocuments)
+      .where(eq(kycDocuments.id, input.documentId))
+      .limit(1);
+    const doc = docs[0];
+    if (!doc) throw new Error("Document not found");
+    const cases = await db.select().from(kycCases).where(eq(kycCases.id, doc.caseId)).limit(1);
+    const kycCase = cases[0];
+    if (!kycCase) throw new Error("Case not found");
+    if (kycCase.status === "approved" || kycCase.status === "rejected") {
+      throw new Error("Documents can only be removed from open cases");
+    }
+    await db.delete(kycDocuments).where(eq(kycDocuments.id, input.documentId));
+    return { caseId: doc.caseId, type: doc.type, blobUrl: doc.blobUrl };
   },
 });
 

@@ -4,17 +4,18 @@
 
 Lean, per-app roles in the form `app:level`, plus one global role:
 
-| Role | Grants |
-|---|---|
-| `kyc:operator` | View KYC queue, claim cases, decide non-escalated cases |
-| `kyc:approver` | `kyc:operator` + decide escalated cases |
-| `refunds:operator` | View refunds dashboard, create refund requests |
-| `refunds:approver` | `refunds:operator` + approve/reject refunds pending approval |
-| `flags:operator` | View flags, toggle/edit flags in dev/staging |
-| `flags:approver` | `flags:operator` + change prod flags |
-| `admin` | Everything, incl. admin/config UI and role assignment |
+| Role               | Grants                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `kyc:operator`     | View KYC queue, claim/release cases, manage case documents, decide non-escalated cases |
+| `kyc:approver`     | `kyc:operator` + decide escalated cases                                                |
+| `refunds:operator` | View refunds dashboard, create refund requests                                         |
+| `refunds:approver` | `refunds:operator` + approve/reject refunds pending approval                           |
+| `flags:operator`   | View flags, toggle/edit flags in dev/staging                                           |
+| `flags:approver`   | `flags:operator` + change prod flags                                                   |
+| `admin`            | Everything, incl. admin/config UI and role assignment                                  |
 
 Notes:
+
 - Users can hold multiple roles.
 - No `viewer` role for now — no confirmed read-only persona; adding one later is a one-line change to the permission matrix, no schema change.
 - Per-app scoping is deliberate least-privilege: a refunds operator has no access to KYC PII.
