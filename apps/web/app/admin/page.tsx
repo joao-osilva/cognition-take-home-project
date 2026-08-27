@@ -93,6 +93,7 @@ export default async function AdminPage({
             totalPages={pagedConfig.totalPages}
             total={config.length}
             noun="entry"
+            nounPlural="entries"
             paramName="configPage"
           />
         </TabsContent>
