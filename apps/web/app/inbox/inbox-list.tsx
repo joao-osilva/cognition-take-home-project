@@ -72,7 +72,7 @@ export function InboxList({ items }: { items: InboxItem[] }) {
               <div className="min-w-0 flex-1">
                 <p className="text-sm">{item.message}</p>
                 <div className="mt-0.5 flex items-center gap-2">
-                  <Badge variant="outline" className="font-mono text-[10px]">
+                  <Badge variant="outline" className="text-[10px]">
                     {item.type}
                   </Badge>
                   <span className="text-muted-foreground text-xs">{item.createdAt}</span>

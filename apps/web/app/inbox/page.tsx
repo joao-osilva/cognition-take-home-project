@@ -1,13 +1,13 @@
 import { queryNotifications } from "@repo/core";
 import { PageHeader, formatRelativeTime } from "@repo/ui";
 
+import { Pagination } from "@/components/pagination";
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
-import { formatMessage, notificationHref } from "@/lib/notifications";
+import { formatMessage, notificationHref, notificationTypeLabel } from "@/lib/notifications";
 
 import { InboxFilters } from "./filters";
 import { InboxList } from "./inbox-list";
-import { Pagination } from "../audit/pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export default async function InboxPage({
 
   const items = result.rows.map((n) => ({
     id: n.id,
-    type: n.type,
+    type: notificationTypeLabel(n.type),
     message: formatMessage(n),
     href: notificationHref(n),
     read: n.readAt !== null,
@@ -51,11 +51,14 @@ export default async function InboxPage({
         title="Inbox"
         description="Everything the platform has notified you about — track, filter, and jump to the work"
       />
-      <InboxFilters types={result.types} current={{ status, type }} />
+      <InboxFilters
+        types={result.types.map((value) => ({ value, label: notificationTypeLabel(value) }))}
+        current={{ status, type }}
+      />
       <div className="mt-4">
         <InboxList items={items} />
       </div>
-      <Pagination page={page} totalPages={totalPages} total={result.total} />
+      <Pagination page={page} totalPages={totalPages} total={result.total} noun="notification" />
     </div>
   );
 }

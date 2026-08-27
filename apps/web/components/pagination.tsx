@@ -8,10 +8,14 @@ export function Pagination({
   page,
   totalPages,
   total,
+  noun = "item",
+  paramName = "page",
 }: {
   page: number;
   totalPages: number;
   total: number;
+  noun?: string;
+  paramName?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -19,15 +23,16 @@ export function Pagination({
 
   function go(target: number) {
     const params = new URLSearchParams(searchParams);
-    if (target <= 1) params.delete("page");
-    else params.set("page", String(target));
+    if (target <= 1) params.delete(paramName);
+    else params.set(paramName, String(target));
     router.push(`${pathname}?${params.toString()}`);
   }
 
   return (
     <div className="mt-3 flex items-center justify-between">
       <span className="text-muted-foreground text-xs">
-        {total} event{total === 1 ? "" : "s"} · page {page} of {totalPages}
+        {total} {noun}
+        {total === 1 ? "" : "s"} · page {page} of {totalPages}
       </span>
       <div className="flex gap-2">
         <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => go(page - 1)}>
