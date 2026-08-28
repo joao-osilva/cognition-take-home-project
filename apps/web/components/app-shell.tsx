@@ -29,13 +29,11 @@ export function AppShell({
   navGroups,
   userName,
   userRoles,
-  bell,
   children,
 }: {
   navGroups: NavGroup[];
   userName: string;
   userRoles: string[];
-  bell: ReactNode;
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -82,7 +80,6 @@ export function AppShell({
             </SheetContent>
           </Sheet>
           <div className="flex-1" />
-          {bell}
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8">{children}</main>
       </div>

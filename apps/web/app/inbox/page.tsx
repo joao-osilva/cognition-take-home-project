@@ -49,7 +49,7 @@ export default async function InboxPage({
     <div>
       <PageHeader
         title="Inbox"
-        description="Your starting point — approvals, cases, and flag changes that need you land here. Open one to jump straight into the work."
+        description="Approvals, cases, and flag changes that need you land here. Open one to get to work."
       />
       <InboxFilters
         types={result.types.map((value) => ({ value, label: notificationTypeLabel(value) }))}

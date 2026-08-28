@@ -1,6 +1,5 @@
-import { countUnreadNotifications, listNotifications, type NotificationRow } from "@repo/core";
+import { countUnreadNotifications, type NotificationRow } from "@repo/core";
 
-import type { NotificationItem } from "@/components/notification-bell";
 import { getDb } from "@/lib/db";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -67,22 +66,6 @@ export function notificationHref(n: NotificationRow): string | null {
   }
 }
 
-export async function getNotificationsForUser(
-  userId: string,
-): Promise<{ items: NotificationItem[]; unreadCount: number }> {
-  const db = getDb();
-  const [rows, unreadCount] = await Promise.all([
-    listNotifications(db, userId),
-    countUnreadNotifications(db, userId),
-  ]);
-
-  const items = rows.map((n) => ({
-    id: n.id,
-    type: n.type,
-    message: formatMessage(n),
-    read: n.readAt !== null,
-    createdAt: n.createdAt.toLocaleString("en-US"),
-  }));
-
-  return { items, unreadCount };
+export async function getUnreadNotificationCount(userId: string): Promise<number> {
+  return countUnreadNotifications(getDb(), userId);
 }

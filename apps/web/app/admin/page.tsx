@@ -93,7 +93,7 @@ export default async function AdminPage({
     <div>
       <PageHeader
         title="Admin"
-        description="Manage user roles and platform configuration — every change is audited"
+        description="Manage user roles and platform configuration. Every change is audited."
       />
       <Tabs defaultValue="users">
         <TabsList>

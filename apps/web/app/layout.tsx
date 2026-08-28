@@ -8,10 +8,9 @@ import { hasRole } from "@repo/core";
 import { Toaster } from "@repo/ui";
 
 import { AppShell } from "@/components/app-shell";
-import { NotificationBell } from "@/components/notification-bell";
 import type { NavGroup } from "@/components/sidebar-nav";
 import { getSessionUser } from "@/lib/actor";
-import { getNotificationsForUser } from "@/lib/notifications";
+import { getUnreadNotificationCount } from "@/lib/notifications";
 import { apps } from "@/lib/apps";
 
 import "./globals.css";
@@ -40,7 +39,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     );
   }
 
-  const { items: notificationItems, unreadCount } = await getNotificationsForUser(user.id);
+  const unreadCount = await getUnreadNotificationCount(user.id);
 
   const visibleApps = apps.filter((app) => hasRole(user, app.requiredRole));
   const isAdmin = hasRole(user, "admin");
@@ -61,10 +60,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           },
         ]
       : []),
-    {
-      label: "Docs",
-      items: [{ href: "/docs/architecture", label: "Architecture", icon: "architecture" }],
-    },
     ...(isAdmin
       ? [
           {
@@ -76,6 +71,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           },
         ]
       : []),
+    {
+      label: "Docs",
+      items: [{ href: "/docs/architecture", label: "Architecture", icon: "architecture" }],
+    },
   ];
 
   return (
@@ -83,14 +82,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className={`${fontClasses} min-h-screen antialiased`}>
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <ClerkProvider>
-            <AppShell
-              navGroups={navGroups}
-              userName={user.name}
-              userRoles={user.roles}
-              bell={
-                <NotificationBell notifications={notificationItems} unreadCount={unreadCount} />
-              }
-            >
+            <AppShell navGroups={navGroups} userName={user.name} userRoles={user.roles}>
               {children}
             </AppShell>
             <Toaster />

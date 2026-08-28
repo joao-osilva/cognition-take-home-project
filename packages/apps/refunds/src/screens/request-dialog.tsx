@@ -111,7 +111,7 @@ export function RequestRefundDialog({
               id="refund-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Required — recorded in the audit log"
+              placeholder="Required. Recorded in the audit log."
             />
           </div>
         </div>

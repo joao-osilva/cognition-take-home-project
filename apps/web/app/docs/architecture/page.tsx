@@ -43,7 +43,7 @@ export default async function ArchitecturePage({
     <div>
       <PageHeader
         title="Architecture"
-        description="How the platform is put together — the design records that govern every change."
+        description="Design records that explain how the platform is put together."
       />
       <div className="flex flex-col gap-6 lg:flex-row">
         <nav aria-label="Architecture documents" className="shrink-0 lg:w-56">
