@@ -8,8 +8,7 @@ One generic engine in the kernel; each app opts in by declaring a typed policy.
 // packages/apps/refunds/src/approval-policy.ts
 export const refundApprovalPolicy = definePolicy<RefundRequest>({
   entityType: "refund_request",
-  needsApproval: (entity, config) =>
-    entity.amount > config.get("refunds.approval_threshold"),
+  needsApproval: () => true, // every refund requires a second person
   canDecide: (actor, entity) =>
     hasRole(actor, "refunds:approver") && actor.id !== entity.requestedBy, // SoD
   onApproved: (tx, entity) => setStatus(tx, entity, "approved"),
@@ -29,15 +28,15 @@ export const refundApprovalPolicy = definePolicy<RefundRequest>({
 
 ## Configuration
 
-Thresholds and similar tunables live in `app_config` (e.g. `refunds.approval_threshold`, integer cents), editable in the admin UI; every change is itself audited. This is the primary config-over-code surface (see known-gaps #7).
+Thresholds and similar tunables live in `app_config` (e.g. `kyc.sla_hours`, `approvals.reminder_hours`), editable in the admin UI; every change is itself audited. This is the primary config-over-code surface (see known-gaps #7). `needsApproval` receives live config so app policies can be config-driven; refunds currently require approval for every request.
 
 ## Usage across the apps
 
-| App | `needsApproval` | `canDecide` |
-|---|---|---|
-| Refunds | amount > configured threshold | `refunds:approver`, ≠ requester |
-| KYC | always, for escalated cases | `kyc:approver`, ≠ escalating analyst |
-| Flags | always, for `prod` environment changes | `flags:approver` |
+| App     | `needsApproval`                        | `canDecide`                          |
+| ------- | -------------------------------------- | ------------------------------------ |
+| Refunds | always                                 | `refunds:approver`, ≠ requester      |
+| KYC     | always, for escalated cases            | `kyc:approver`, ≠ escalating analyst |
+| Flags   | always, for `prod` environment changes | `flags:approver`                     |
 
 ## Timers / async
 

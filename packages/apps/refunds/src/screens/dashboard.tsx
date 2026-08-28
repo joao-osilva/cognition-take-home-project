@@ -11,24 +11,40 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  formatRelativeTime,
 } from "@repo/ui";
 
-import type { RefundMetrics, RefundRow, RefundableTransaction } from "../queries";
-import { RefundDecision } from "./refund-decision";
+import type {
+  RefundDetail,
+  RefundMetrics,
+  RefundRequester,
+  RefundRow,
+  RefundableTransaction,
+} from "../queries";
+import { RefundsFilterBar } from "./filter-bar";
+import { RefundDetailDialog } from "./refund-detail-dialog";
+import { RefundTableRow } from "./refund-row";
 import { RequestRefundDialog } from "./request-dialog";
 
 export function RefundsDashboardScreen({
   rows,
   metrics,
-  transactions,
+  detail,
+  status,
+  requestedBy,
+  requesters,
   canRequest,
   canDecide,
   onRequest,
   onDecide,
+  onSearchTransactions,
 }: {
   rows: RefundRow[];
   metrics: RefundMetrics;
-  transactions: RefundableTransaction[];
+  detail: RefundDetail | null;
+  status?: string;
+  requestedBy?: string;
+  requesters: RefundRequester[];
   canRequest: boolean;
   canDecide: boolean;
   onRequest: (transactionId: string, amountCents: number, reason: string) => Promise<ActionResult>;
@@ -37,6 +53,7 @@ export function RefundsDashboardScreen({
     decision: "approved" | "rejected",
     reason: string,
   ) => Promise<ActionResult>;
+  onSearchTransactions: (query: string) => Promise<RefundableTransaction[]>;
 }) {
   return (
     <div>
@@ -45,7 +62,7 @@ export function RefundsDashboardScreen({
         description="Request refunds and run maker-checker approvals"
         actions={
           canRequest ? (
-            <RequestRefundDialog transactions={transactions} onRequest={onRequest} />
+            <RequestRefundDialog onRequest={onRequest} onSearch={onSearchTransactions} />
           ) : undefined
         }
       />
@@ -60,6 +77,7 @@ export function RefundsDashboardScreen({
           value={`${metrics.approvedCount} / ${metrics.rejectedCount}`}
         />
       </div>
+      <RefundsFilterBar status={status} requestedBy={requestedBy} requesters={requesters} />
       <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
@@ -69,17 +87,20 @@ export function RefundsDashboardScreen({
               <TableHead>Reason</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Requested by</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Requested</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map(({ refund, customerName, requesterName, approvalId }) => (
-              <TableRow key={refund.id}>
+            {rows.map(({ refund, customerName, requesterName }) => (
+              <RefundTableRow key={refund.id} refundId={refund.id}>
                 <TableCell className="font-medium">{customerName}</TableCell>
                 <TableCell className="text-right">
                   <Money amountCents={refund.amount} currency={refund.currency} />
                 </TableCell>
-                <TableCell className="text-muted-foreground max-w-64 truncate">
+                <TableCell
+                  className="text-muted-foreground max-w-64 truncate"
+                  title={refund.reason}
+                >
                   {refund.reason}
                 </TableCell>
                 <TableCell>
@@ -88,23 +109,27 @@ export function RefundsDashboardScreen({
                 <TableCell className="text-muted-foreground">
                   {requesterName ?? refund.requestedBy}
                 </TableCell>
-                <TableCell className="text-right">
-                  {canDecide && approvalId && refund.status === "pending_approval" ? (
-                    <RefundDecision approvalId={approvalId} onDecide={onDecide} />
-                  ) : null}
+                <TableCell
+                  className="text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap"
+                  title={refund.createdAt.toISOString()}
+                >
+                  {formatRelativeTime(refund.createdAt)}
                 </TableCell>
-              </TableRow>
+              </RefundTableRow>
             ))}
           </TableBody>
         </Table>
         {rows.length === 0 ? (
           <EmptyState
-            title="No refund requests yet"
+            title="No refund requests found"
             hint="Submitted requests appear here for review and approval."
             className="m-4"
           />
         ) : null}
       </div>
+      {detail ? (
+        <RefundDetailDialog detail={detail} canDecide={canDecide} onDecide={onDecide} />
+      ) : null}
     </div>
   );
 }

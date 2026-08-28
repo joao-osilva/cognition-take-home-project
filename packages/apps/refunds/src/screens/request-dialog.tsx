@@ -14,44 +14,47 @@ import {
   DialogTrigger,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Textarea,
   formatMoney,
   toast,
 } from "@repo/ui";
 
 import type { RefundableTransaction } from "../queries";
+import { TransactionCombobox } from "./transaction-combobox";
 
 export function RequestRefundDialog({
-  transactions,
   onRequest,
+  onSearch,
 }: {
-  transactions: RefundableTransaction[];
   onRequest: (transactionId: string, amountCents: number, reason: string) => Promise<ActionResult>;
+  onSearch: (query: string) => Promise<RefundableTransaction[]>;
 }) {
   const [open, setOpen] = useState(false);
-  const [transactionId, setTransactionId] = useState("");
+  const [selected, setSelected] = useState<RefundableTransaction | null>(null);
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
 
-  const selected = transactions.find((t) => t.id === transactionId);
   const amountCents = Math.round(Number(amount) * 100);
+  const amountEntered = amount.trim().length > 0;
+  const exceedsMax = Boolean(
+    selected && Number.isFinite(amountCents) && amountCents > selected.amount,
+  );
   const valid =
-    selected && Number.isFinite(amountCents) && amountCents > 0 && reason.trim().length >= 3;
+    selected &&
+    Number.isFinite(amountCents) &&
+    amountCents > 0 &&
+    !exceedsMax &&
+    reason.trim().length >= 3;
 
   const submit = () =>
     startTransition(async () => {
       if (!selected) return;
       const result = await onRequest(selected.id, amountCents, reason.trim());
       if (result.ok) {
-        toast.success("Refund request submitted");
+        toast.success("Refund request submitted for approval");
         setOpen(false);
-        setTransactionId("");
+        setSelected(null);
         setAmount("");
         setReason("");
       } else {
@@ -68,24 +71,13 @@ export function RequestRefundDialog({
         <DialogHeader>
           <DialogTitle>Request a refund</DialogTitle>
           <DialogDescription>
-            Refunds at or above the configured threshold require approval by a second person.
+            Every refund request requires approval by a second person before it is processed.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label>Transaction</Label>
-            <Select value={transactionId} onValueChange={setTransactionId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pick a settled transaction" />
-              </SelectTrigger>
-              <SelectContent>
-                {transactions.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.customerName} — {formatMoney(t.amount, t.currency)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <TransactionCombobox selected={selected} onSelect={setSelected} onSearch={onSearch} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="amount">Amount (USD)</Label>
@@ -96,10 +88,22 @@ export function RequestRefundDialog({
               step="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              aria-invalid={exceedsMax}
               placeholder={
                 selected ? `Up to ${formatMoney(selected.amount, selected.currency)}` : "0.00"
               }
             />
+            {exceedsMax && selected ? (
+              <p className="text-destructive text-xs" role="alert">
+                Amount exceeds the transaction total of{" "}
+                {formatMoney(selected.amount, selected.currency)}.
+              </p>
+            ) : null}
+            {amountEntered && !exceedsMax && (!Number.isFinite(amountCents) || amountCents <= 0) ? (
+              <p className="text-destructive text-xs" role="alert">
+                Enter an amount greater than zero.
+              </p>
+            ) : null}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="refund-reason">Reason</Label>
@@ -113,7 +117,7 @@ export function RequestRefundDialog({
         </div>
         <DialogFooter>
           <Button disabled={!valid || pending} onClick={submit}>
-            Submit request
+            Submit for approval
           </Button>
         </DialogFooter>
       </DialogContent>
