@@ -100,6 +100,7 @@ export function KycCaseScreen({
                   ...e,
                   actionLabel: kycActionLabel(e.action),
                 }))}
+                pageSize={6}
               />
             </CardContent>
           </Card>
