@@ -49,8 +49,29 @@ const STATUS_TONES: Record<string, Tone> = {
   high: "danger",
 };
 
-export function StatusBadge({ status, className }: { status: string; className?: string }) {
+export function StatusBadge({
+  status,
+  variant = "pill",
+  className,
+}: {
+  status: string;
+  variant?: "pill" | "dot";
+  className?: string;
+}) {
   const tone = TONE_CLASSES[STATUS_TONES[status] ?? "neutral"];
+  if (variant === "dot") {
+    return (
+      <span
+        className={cn(
+          "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap text-sm capitalize",
+          className,
+        )}
+      >
+        <span aria-hidden className={cn("size-1.5 rounded-full", tone.dot)} />
+        {status.replaceAll("_", " ")}
+      </span>
+    );
+  }
   return (
     <span
       className={cn(

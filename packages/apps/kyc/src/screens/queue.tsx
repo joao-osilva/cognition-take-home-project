@@ -81,7 +81,7 @@ export function KycQueueScreen({
                     <StatusBadge status={kycCase.status} />
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={kycCase.riskLevel} />
+                    <StatusBadge status={kycCase.riskLevel} variant="dot" />
                   </TableCell>
                   <TableCell className="text-muted-foreground">{assigneeName ?? "—"}</TableCell>
                   <TableCell
