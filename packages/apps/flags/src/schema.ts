@@ -12,6 +12,7 @@ export const featureFlags = pgTable(
     rolloutPercentage: integer("rollout_percentage"),
     ownerId: text("owner_id").notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
   },
   (t) => [
     uniqueIndex("feature_flags_key_env_unique").on(t.key, t.environment),

@@ -25,7 +25,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu";
-export { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+export { CheckIcon, ChevronsUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 
 export { Checkbox } from "./components/checkbox";
 export {

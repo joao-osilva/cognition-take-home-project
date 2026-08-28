@@ -1,5 +1,5 @@
 import { platformSchema, type Db } from "@repo/db";
-import { and, asc, eq, isNull } from "@repo/db/orm";
+import { and, asc, eq, isNotNull, isNull } from "@repo/db/orm";
 
 import { featureFlags } from "./schema";
 
@@ -9,11 +9,13 @@ export interface PendingFlagChange {
   approvalId: string;
   requestedBy: string;
   proposedState: string;
+  proposedRolloutPercentage: number | null;
 }
 
 export interface FlagGroup {
   key: string;
   description: string;
+  archived: boolean;
   environments: Partial<Record<"dev" | "staging" | "prod", FeatureFlag>>;
   pendingProdChange?: PendingFlagChange;
 }
@@ -35,12 +37,19 @@ export async function listFlagsForEnvironment(
       rolloutPercentage: featureFlags.rolloutPercentage,
     })
     .from(featureFlags)
-    .where(eq(featureFlags.environment, environment))
+    .where(and(eq(featureFlags.environment, environment), isNull(featureFlags.archivedAt)))
     .orderBy(asc(featureFlags.key));
 }
 
-export async function listFlagGroups(db: Db): Promise<FlagGroup[]> {
-  const flags = await db.select().from(featureFlags).orderBy(asc(featureFlags.key));
+export async function listFlagGroups(
+  db: Db,
+  options: { archived?: boolean } = {},
+): Promise<FlagGroup[]> {
+  const flags = await db
+    .select()
+    .from(featureFlags)
+    .where(options.archived ? isNotNull(featureFlags.archivedAt) : isNull(featureFlags.archivedAt))
+    .orderBy(asc(featureFlags.key));
   const pending = await db
     .select()
     .from(platformSchema.approvals)
@@ -55,18 +64,27 @@ export async function listFlagGroups(db: Db): Promise<FlagGroup[]> {
   for (const flag of flags) {
     let group = groups.get(flag.key);
     if (!group) {
-      group = { key: flag.key, description: flag.description, environments: {} };
+      group = {
+        key: flag.key,
+        description: flag.description,
+        archived: flag.archivedAt !== null,
+        environments: {},
+      };
       groups.set(flag.key, group);
     }
     group.environments[flag.environment as "dev" | "staging" | "prod"] = flag;
     if (flag.environment === "prod") {
       const approval = pending.find((a) => a.entityId === flag.id);
       if (approval) {
-        const snapshot = (approval.ruleSnapshot ?? {}) as { state?: string };
+        const snapshot = (approval.ruleSnapshot ?? {}) as {
+          state?: string;
+          rolloutPercentage?: number | null;
+        };
         group.pendingProdChange = {
           approvalId: approval.id,
           requestedBy: approval.requestedBy,
           proposedState: snapshot.state ?? "on",
+          proposedRolloutPercentage: snapshot.rolloutPercentage ?? null,
         };
       }
     }

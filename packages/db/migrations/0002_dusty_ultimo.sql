@@ -1,0 +1,1 @@
+ALTER TABLE "feature_flags" ADD COLUMN "archived_at" timestamp with time zone;

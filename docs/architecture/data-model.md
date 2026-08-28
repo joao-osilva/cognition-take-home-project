@@ -33,7 +33,7 @@ Promotion rule: when an app-specific entity becomes needed by a second app, it i
 - `kyc_cases` — id, customer_id (FK core), status (`pending|in_review|approved|rejected|escalated`), risk_level, assignee_id, sla_due_at, decision_reason, timestamps
 - `kyc_documents` — id, case_id (FK), type, blob_url, uploaded_at
 - `refund_requests` — id, transaction_id (FK core), amount, currency, reason, status (`requested|pending_approval|approved|rejected|processed`), requested_by, timestamps
-- `feature_flags` — id, key, description, environment (`dev|staging|prod`), state (on/off/percentage), owner_id, updated_at; unique (key, environment)
+- `feature_flags` — id, key, description, environment (`dev|staging|prod`), state (on/off/percentage), rollout_percentage, owner_id, updated_at, archived_at; unique (key, environment). Creating a flag inserts one row per environment, all `off`. Flags are soft-archived (`archived_at` set on all rows) rather than deleted — history and audit stay intact, archived flags disappear from `/api/flags`, and archiving requires prod to be `off` with no pending approval. Restore clears `archived_at`.
 
 ## Decisions
 
