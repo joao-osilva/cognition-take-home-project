@@ -61,6 +61,7 @@ export { Skeleton } from "./components/skeleton";
 export { AuditTrail, type AuditTrailEntry } from "./audit-trail";
 export { cn } from "./lib/utils";
 export { EmptyState } from "./empty-state";
+export { ClearFiltersButton, FilterSearchInput, useFilterNavigation } from "./filter-bar";
 export { formatDateTime, formatRelativeTime } from "./format-date";
 export { StatCard } from "./stat-card";
 export { Money, formatMoney } from "./money";

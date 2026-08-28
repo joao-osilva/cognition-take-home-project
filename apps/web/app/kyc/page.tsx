@@ -15,7 +15,7 @@ const PAGE_SIZE = 25;
 export default async function KycPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; risk?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; risk?: string; customer?: string; page?: string }>;
 }) {
   const actor = await getActor();
   if (!canView(actor, kycAppMeta.requiredRole)) return <NoAccess />;
@@ -24,6 +24,7 @@ export default async function KycPage({
   const filters = {
     status: params.status === "all" ? undefined : params.status,
     riskLevel: params.risk === "all" ? undefined : params.risk,
+    customer: params.customer?.trim() || undefined,
   };
   const allCases = await listKycCases(getDb(), filters);
   const page = Math.max(Number(params.page ?? "1") || 1, 1);

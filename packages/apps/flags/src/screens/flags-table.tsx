@@ -2,7 +2,9 @@ import Link from "next/link";
 
 import type { ActionResult } from "@repo/core";
 import {
+  ClearFiltersButton,
   EmptyState,
+  FilterSearchInput,
   PageHeader,
   Table,
   TableBody,
@@ -24,6 +26,7 @@ const ENVIRONMENTS = ["dev", "staging", "prod"] as const;
 export function FlagsScreen({
   groups,
   archivedView,
+  search,
   canToggle,
   canApprove,
   onSetState,
@@ -34,6 +37,7 @@ export function FlagsScreen({
 }: {
   groups: FlagGroup[];
   archivedView: boolean;
+  search?: string;
   canToggle: boolean;
   canApprove: boolean;
   onSetState: (
@@ -57,13 +61,21 @@ export function FlagsScreen({
         description="Toggle flags per environment — production changes require approval"
         actions={canToggle && !archivedView ? <NewFlagDialog onCreate={onCreate} /> : undefined}
       />
-      <div className="mb-4 flex items-center gap-1" role="tablist" aria-label="Flag view">
-        <ViewTab href="/flags" active={!archivedView}>
-          Active
-        </ViewTab>
-        <ViewTab href="/flags?view=archived" active={archivedView}>
-          Archived
-        </ViewTab>
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-1" role="tablist" aria-label="Flag view">
+          <ViewTab href="/flags" active={!archivedView}>
+            Active
+          </ViewTab>
+          <ViewTab href="/flags?view=archived" active={archivedView}>
+            Archived
+          </ViewTab>
+        </div>
+        <FilterSearchInput
+          value={search}
+          placeholder="Search key or description…"
+          ariaLabel="Search flags by key or description"
+        />
+        {search ? <ClearFiltersButton params={["q"]} /> : null}
       </div>
       <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
@@ -141,7 +153,13 @@ export function FlagsScreen({
           </TableBody>
         </Table>
         {groups.length === 0 ? (
-          archivedView ? (
+          search ? (
+            <EmptyState
+              title="No matching flags"
+              hint="Try adjusting your search, or clear it to see all flags."
+              className="m-4"
+            />
+          ) : archivedView ? (
             <EmptyState
               title="No archived flags"
               hint="Flags you archive appear here and can be restored."

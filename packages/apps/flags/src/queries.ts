@@ -1,5 +1,5 @@
 import { platformSchema, type Db } from "@repo/db";
-import { and, asc, eq, isNotNull, isNull } from "@repo/db/orm";
+import { and, asc, eq, ilike, isNotNull, isNull, or } from "@repo/db/orm";
 
 import { featureFlags } from "./schema";
 
@@ -43,12 +43,21 @@ export async function listFlagsForEnvironment(
 
 export async function listFlagGroups(
   db: Db,
-  options: { archived?: boolean } = {},
+  options: { archived?: boolean; search?: string } = {},
 ): Promise<FlagGroup[]> {
+  const archivedFilter = options.archived
+    ? isNotNull(featureFlags.archivedAt)
+    : isNull(featureFlags.archivedAt);
+  const searchFilter = options.search
+    ? or(
+        ilike(featureFlags.key, `%${options.search}%`),
+        ilike(featureFlags.description, `%${options.search}%`),
+      )
+    : undefined;
   const flags = await db
     .select()
     .from(featureFlags)
-    .where(options.archived ? isNotNull(featureFlags.archivedAt) : isNull(featureFlags.archivedAt))
+    .where(searchFilter ? and(archivedFilter, searchFilter) : archivedFilter)
     .orderBy(asc(featureFlags.key));
   const pending = await db
     .select()

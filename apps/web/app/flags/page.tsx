@@ -22,14 +22,15 @@ const PAGE_SIZE = 25;
 export default async function FlagsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; view?: string }>;
+  searchParams: Promise<{ page?: string; view?: string; q?: string }>;
 }) {
   const actor = await getActor();
   if (!canView(actor, flagsAppMeta.requiredRole)) return <NoAccess />;
 
   const params = await searchParams;
   const archivedView = params.view === "archived";
-  const groups = await listFlagGroups(getDb(), { archived: archivedView });
+  const search = params.q?.trim() || undefined;
+  const groups = await listFlagGroups(getDb(), { archived: archivedView, search });
 
   const page = Math.max(Number(params.page ?? "1") || 1, 1);
   const totalPages = Math.max(Math.ceil(groups.length / PAGE_SIZE), 1);
@@ -40,6 +41,7 @@ export default async function FlagsPage({
       <FlagsScreen
         groups={pagedGroups}
         archivedView={archivedView}
+        search={search}
         canToggle={hasRole(actor, "flags:operator")}
         canApprove={hasRole(actor, "flags:approver")}
         onSetState={setFlagStateAction}
