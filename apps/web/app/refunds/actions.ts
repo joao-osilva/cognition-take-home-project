@@ -2,8 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 
-import { decideRefund, requestRefund } from "@repo/app-refunds";
-import { type ActionResult } from "@repo/core";
+import {
+  decideRefund,
+  refundsAppMeta,
+  requestRefund,
+  searchRefundableTransactions,
+  type RefundableTransaction,
+} from "@repo/app-refunds";
+import { hasRole, type ActionResult } from "@repo/core";
 
 import { getActor } from "@/lib/actor";
 import { getDb } from "@/lib/db";
@@ -25,20 +31,19 @@ export async function requestRefundAction(
   const context = await ctx();
   let result: ActionResult;
   try {
-    const refund = await requestRefund(context, { transactionId, amount, reason });
-    if (refund.status === "approved") {
-      // Below-threshold refunds are auto-approved; hand them to settlement.
-      await sendEvent("refund.approved", {
-        refundId: refund.refundId,
-        requestedBy: context.actor.id,
-      });
-    }
+    await requestRefund(context, { transactionId, amount, reason });
     result = { ok: true };
   } catch (err) {
     result = toError(err);
   }
   revalidatePath("/refunds");
   return result;
+}
+
+export async function searchTransactionsAction(query: string): Promise<RefundableTransaction[]> {
+  const { db, actor } = await ctx();
+  if (!hasRole(actor, refundsAppMeta.requiredRole)) return [];
+  return searchRefundableTransactions(db, query);
 }
 
 export async function decideRefundAction(

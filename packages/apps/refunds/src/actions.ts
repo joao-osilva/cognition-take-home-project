@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { decideApproval, defineAction, getConfig, notify, requestApproval } from "@repo/core";
+import { decideApproval, defineAction, notify, requestApproval } from "@repo/core";
 import { coreSchema, platformSchema } from "@repo/db";
 import { eq } from "@repo/db/orm";
 
@@ -45,28 +45,15 @@ export const requestRefund = defineAction({
     const refund = rows[0];
     if (!refund) throw new Error("Failed to create refund request");
 
-    const config = {
-      get: <V>(key: string, fallback: V) => getConfig(db, key, fallback),
-    };
-    if (await refundApprovalPolicy.needsApproval(refund, config)) {
-      const threshold = await config.get("refunds.approval_threshold", 100000);
-      await db
-        .update(refundRequests)
-        .set({ status: "pending_approval", updatedAt: new Date() })
-        .where(eq(refundRequests.id, refund.id));
-      await requestApproval(db, refundApprovalPolicy, refund, actor, {
-        threshold,
-        amount: refund.amount,
-      });
-      return { refundId: refund.id, status: "pending_approval" };
-    }
-
-    // Below the threshold: auto-approved and handed to processing.
     await db
       .update(refundRequests)
-      .set({ status: "approved", updatedAt: new Date() })
+      .set({ status: "pending_approval", updatedAt: new Date() })
       .where(eq(refundRequests.id, refund.id));
-    return { refundId: refund.id, status: "approved" };
+    await requestApproval(db, refundApprovalPolicy, refund, actor, {
+      policy: "all_refunds_require_approval",
+      amount: refund.amount,
+    });
+    return { refundId: refund.id, status: "pending_approval" };
   },
 });
 

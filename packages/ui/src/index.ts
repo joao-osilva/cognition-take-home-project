@@ -25,7 +25,17 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu";
+export { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+
 export { Checkbox } from "./components/checkbox";
+export {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./components/command";
 export { Popover, PopoverContent, PopoverTrigger } from "./components/popover";
 export { Input } from "./components/input";
 export { Label } from "./components/label";
