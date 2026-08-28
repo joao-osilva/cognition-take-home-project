@@ -6,7 +6,7 @@ import { useState, type ReactNode } from "react";
 
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@repo/ui";
 
-import { SidebarNav, type NavItem } from "@/components/sidebar-nav";
+import { SidebarNav, type NavGroup } from "@/components/sidebar-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 function Brand() {
@@ -26,13 +26,13 @@ function Brand() {
 }
 
 export function AppShell({
-  navItems,
+  navGroups,
   userName,
   userRoles,
   bell,
   children,
 }: {
-  navItems: NavItem[];
+  navGroups: NavGroup[];
   userName: string;
   userRoles: string[];
   bell: ReactNode;
@@ -44,7 +44,7 @@ export function AppShell({
     <>
       <Brand />
       <div className="flex-1 overflow-y-auto px-3">
-        <SidebarNav items={navItems} onNavigate={() => setMobileOpen(false)} />
+        <SidebarNav groups={navGroups} onNavigate={() => setMobileOpen(false)} />
       </div>
       <div className="border-sidebar-border flex items-center gap-3 border-t px-4 py-3">
         <UserButton />

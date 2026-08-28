@@ -50,7 +50,7 @@ export function InboxList({ items }: { items: InboxItem[] }) {
         <EmptyState
           icon={<Inbox />}
           title="You're all caught up"
-          hint="New notifications from approvals, reminders, and workflows land here."
+          hint="Nothing needs your attention right now. Approvals, reminders, and workflow updates will land here — pick an app in the sidebar to start work."
           className="m-4 border-0"
         />
       ) : (

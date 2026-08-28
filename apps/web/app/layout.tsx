@@ -9,7 +9,7 @@ import { Toaster } from "@repo/ui";
 
 import { AppShell } from "@/components/app-shell";
 import { NotificationBell } from "@/components/notification-bell";
-import type { NavItem } from "@/components/sidebar-nav";
+import type { NavGroup } from "@/components/sidebar-nav";
 import { getSessionUser } from "@/lib/actor";
 import { getNotificationsForUser } from "@/lib/notifications";
 import { apps } from "@/lib/apps";
@@ -44,19 +44,36 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   const visibleApps = apps.filter((app) => hasRole(user, app.requiredRole));
   const isAdmin = hasRole(user, "admin");
-  const navItems: NavItem[] = [
-    { href: "/", label: "Home", icon: "home" },
-    { href: "/inbox", label: "Inbox", icon: "inbox", badge: unreadCount || undefined },
-    ...visibleApps.map((app, i) => ({
-      href: app.basePath,
-      label: app.name,
-      icon: app.id,
-      separator: i === 0,
-    })),
+  const navGroups: NavGroup[] = [
+    {
+      label: "Workspace",
+      items: [{ href: "/inbox", label: "Inbox", icon: "inbox", badge: unreadCount || undefined }],
+    },
+    ...(visibleApps.length > 0
+      ? [
+          {
+            label: "Apps",
+            items: visibleApps.map((app) => ({
+              href: app.basePath,
+              label: app.name,
+              icon: app.id,
+            })),
+          },
+        ]
+      : []),
+    {
+      label: "Docs",
+      items: [{ href: "/docs/architecture", label: "Architecture", icon: "architecture" }],
+    },
     ...(isAdmin
       ? [
-          { href: "/audit", label: "Audit", icon: "audit", separator: true },
-          { href: "/admin", label: "Admin", icon: "admin" },
+          {
+            label: "Settings",
+            items: [
+              { href: "/audit", label: "Audit", icon: "audit" },
+              { href: "/admin", label: "Admin", icon: "admin" },
+            ],
+          },
         ]
       : []),
   ];
@@ -67,7 +84,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <ClerkProvider>
             <AppShell
-              navItems={navItems}
+              navGroups={navGroups}
               userName={user.name}
               userRoles={user.roles}
               bell={
