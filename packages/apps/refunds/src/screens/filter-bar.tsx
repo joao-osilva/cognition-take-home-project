@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 
 import type { RefundRequester } from "../queries";
 
@@ -12,17 +12,41 @@ const ALL = "all";
 export function RefundsFilterBar({
   status,
   requestedBy,
+  customer,
   requesters,
 }: {
   status?: string;
   requestedBy?: string;
+  customer?: string;
   requesters: RefundRequester[];
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const submit = () => setTimeout(() => formRef.current?.requestSubmit(), 0);
+  const debouncedSubmit = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => formRef.current?.requestSubmit(), 400);
+  };
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
 
   return (
-    <form ref={formRef} method="get" className="mb-4 flex gap-3">
+    <form ref={formRef} method="get" className="mb-4 flex flex-wrap gap-3">
+      <Input
+        type="search"
+        name="customer"
+        defaultValue={customer ?? ""}
+        placeholder="Search customer…"
+        aria-label="Search by customer name"
+        autoComplete="off"
+        spellCheck={false}
+        className="w-56"
+        onChange={debouncedSubmit}
+      />
       <Select name="status" defaultValue={status ?? ALL} onValueChange={submit}>
         <SelectTrigger className="w-44" aria-label="Filter by status">
           <SelectValue placeholder="Status" />

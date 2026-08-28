@@ -32,6 +32,7 @@ export function RefundsDashboardScreen({
   detail,
   status,
   requestedBy,
+  customer,
   requesters,
   canRequest,
   canDecide,
@@ -44,6 +45,7 @@ export function RefundsDashboardScreen({
   detail: RefundDetail | null;
   status?: string;
   requestedBy?: string;
+  customer?: string;
   requesters: RefundRequester[];
   canRequest: boolean;
   canDecide: boolean;
@@ -77,7 +79,12 @@ export function RefundsDashboardScreen({
           value={`${metrics.approvedCount} / ${metrics.rejectedCount}`}
         />
       </div>
-      <RefundsFilterBar status={status} requestedBy={requestedBy} requesters={requesters} />
+      <RefundsFilterBar
+        status={status}
+        requestedBy={requestedBy}
+        customer={customer}
+        requesters={requesters}
+      />
       <div className="bg-card overflow-x-auto rounded-lg border shadow-xs">
         <Table>
           <TableHeader>
@@ -122,7 +129,11 @@ export function RefundsDashboardScreen({
         {rows.length === 0 ? (
           <EmptyState
             title="No refund requests found"
-            hint="Submitted requests appear here for review and approval."
+            hint={
+              status || requestedBy || customer
+                ? "Try adjusting your search or filters."
+                : "Submitted requests appear here for review and approval."
+            }
             className="m-4"
           />
         ) : null}

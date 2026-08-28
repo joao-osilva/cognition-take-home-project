@@ -29,6 +29,7 @@ export interface RefundableTransaction {
 export interface RefundFilters {
   status?: string;
   requestedBy?: string;
+  customer?: string;
 }
 
 export interface RefundRequester {
@@ -40,6 +41,9 @@ export async function listRefunds(db: Db, filters: RefundFilters = {}): Promise<
   const conditions = [
     filters.status ? eq(refundRequests.status, filters.status) : undefined,
     filters.requestedBy ? eq(refundRequests.requestedBy, filters.requestedBy) : undefined,
+    filters.customer?.trim()
+      ? ilike(coreSchema.customers.name, `%${filters.customer.trim()}%`)
+      : undefined,
   ].filter((c) => c !== undefined);
 
   const rows = await db

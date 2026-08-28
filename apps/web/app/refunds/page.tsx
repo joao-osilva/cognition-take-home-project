@@ -22,7 +22,13 @@ const PAGE_SIZE = 25;
 export default async function RefundsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; status?: string; requester?: string; refund?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    requester?: string;
+    customer?: string;
+    refund?: string;
+  }>;
 }) {
   const actor = await getActor();
   if (!canView(actor, refundsAppMeta.requiredRole)) return <NoAccess />;
@@ -31,8 +37,9 @@ export default async function RefundsPage({
   const params = await searchParams;
   const status = params.status && params.status !== "all" ? params.status : undefined;
   const requestedBy = params.requester && params.requester !== "all" ? params.requester : undefined;
+  const customer = params.customer?.trim() || undefined;
 
-  const rows = await listRefunds(db, { status, requestedBy });
+  const rows = await listRefunds(db, { status, requestedBy, customer });
   const requesters = await listRefundRequesters(db);
   const detail = params.refund ? ((await getRefundDetail(db, params.refund)) ?? null) : null;
 
@@ -48,6 +55,7 @@ export default async function RefundsPage({
         detail={detail}
         status={status}
         requestedBy={requestedBy}
+        customer={customer}
         requesters={requesters}
         canRequest={hasRole(actor, "refunds:operator")}
         canDecide={hasRole(actor, "refunds:approver")}
