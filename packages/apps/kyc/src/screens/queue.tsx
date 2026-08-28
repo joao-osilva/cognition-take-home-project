@@ -32,7 +32,7 @@ export function KycQueueScreen({
 }: {
   cases: KycCaseRow[];
   total?: number;
-  filters: { status?: string; riskLevel?: string };
+  filters: { status?: string; riskLevel?: string; customer?: string };
   onCreateCase?: (input: NewKycCaseInput) => Promise<ActionResult>;
 }) {
   const caseCount = total ?? cases.length;
@@ -44,7 +44,11 @@ export function KycQueueScreen({
         actions={onCreateCase ? <NewCaseDialog onCreate={onCreateCase} /> : undefined}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <KycFilterBar status={filters.status} riskLevel={filters.riskLevel} />
+        <KycFilterBar
+          status={filters.status}
+          riskLevel={filters.riskLevel}
+          customer={filters.customer}
+        />
         <span className="text-muted-foreground text-xs">
           {caseCount} case{caseCount === 1 ? "" : "s"}
         </span>

@@ -29,7 +29,7 @@ export interface KycCaseDetail extends KycCaseRow {
 
 export async function listKycCases(
   db: Db,
-  filters: { status?: string; riskLevel?: string } = {},
+  filters: { status?: string; riskLevel?: string; customer?: string } = {},
 ): Promise<KycCaseRow[]> {
   const rows = await db
     .select({
@@ -44,10 +44,12 @@ export async function listKycCases(
     .leftJoin(platformSchema.users, eq(kycCases.assigneeId, platformSchema.users.id))
     .orderBy(desc(kycCases.createdAt));
 
+  const customer = filters.customer?.toLowerCase();
   return rows.filter(
     (r) =>
       (!filters.status || r.kycCase.status === filters.status) &&
-      (!filters.riskLevel || r.kycCase.riskLevel === filters.riskLevel),
+      (!filters.riskLevel || r.kycCase.riskLevel === filters.riskLevel) &&
+      (!customer || r.customerName.toLowerCase().includes(customer)),
   );
 }
 

@@ -1,8 +1,14 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
+import {
+  ClearFiltersButton,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useFilterNavigation,
+} from "@repo/ui";
 
 const ALL = "__all__";
 
@@ -13,20 +19,7 @@ export function InboxFilters({
   types: { value: string; label: string }[];
   current: { status?: string; type?: string };
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  function apply(updates: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams);
-    for (const [key, value] of Object.entries(updates)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    params.delete("page");
-    router.push(`${pathname}?${params.toString()}`);
-  }
-
+  const apply = useFilterNavigation();
   const hasFilters = Boolean(current.status || current.type);
 
   return (
@@ -59,15 +52,7 @@ export function InboxFilters({
           ))}
         </SelectContent>
       </Select>
-      {hasFilters ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => apply({ status: undefined, type: undefined })}
-        >
-          Clear
-        </Button>
-      ) : null}
+      {hasFilters ? <ClearFiltersButton params={["status", "type"]} /> : null}
     </div>
   );
 }

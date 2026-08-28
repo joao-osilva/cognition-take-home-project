@@ -1,21 +1,45 @@
 "use client";
 
-import { useRef } from "react";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
+import {
+  ClearFiltersButton,
+  FilterSearchInput,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useFilterNavigation,
+} from "@repo/ui";
 
 const STATUSES = ["pending", "in_review", "escalated", "approved", "rejected"];
 const RISK_LEVELS = ["low", "medium", "high"];
 const ALL = "all";
 
-export function KycFilterBar({ status, riskLevel }: { status?: string; riskLevel?: string }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const submit = () => setTimeout(() => formRef.current?.requestSubmit(), 0);
+export function KycFilterBar({
+  status,
+  riskLevel,
+  customer,
+}: {
+  status?: string;
+  riskLevel?: string;
+  customer?: string;
+}) {
+  const apply = useFilterNavigation();
+  const hasFilters = Boolean(status || riskLevel || customer);
 
   return (
-    <form ref={formRef} method="get" className="mb-4 flex gap-3">
-      <Select name="status" defaultValue={status ?? ALL} onValueChange={submit}>
-        <SelectTrigger className="w-40">
+    <div className="flex flex-wrap items-center gap-3">
+      <FilterSearchInput
+        paramName="customer"
+        value={customer}
+        placeholder="Search customer…"
+        ariaLabel="Search by customer name"
+      />
+      <Select
+        value={status ?? ALL}
+        onValueChange={(value) => apply({ status: value === ALL ? undefined : value })}
+      >
+        <SelectTrigger className="w-40" aria-label="Filter by status">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -27,8 +51,11 @@ export function KycFilterBar({ status, riskLevel }: { status?: string; riskLevel
           ))}
         </SelectContent>
       </Select>
-      <Select name="risk" defaultValue={riskLevel ?? ALL} onValueChange={submit}>
-        <SelectTrigger className="w-36">
+      <Select
+        value={riskLevel ?? ALL}
+        onValueChange={(value) => apply({ risk: value === ALL ? undefined : value })}
+      >
+        <SelectTrigger className="w-36" aria-label="Filter by risk level">
           <SelectValue placeholder="Risk" />
         </SelectTrigger>
         <SelectContent>
@@ -40,6 +67,7 @@ export function KycFilterBar({ status, riskLevel }: { status?: string; riskLevel
           ))}
         </SelectContent>
       </Select>
-    </form>
+      {hasFilters ? <ClearFiltersButton params={["customer", "status", "risk"]} /> : null}
+    </div>
   );
 }

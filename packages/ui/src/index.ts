@@ -25,7 +25,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu";
-export { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+export { CheckIcon, ChevronsUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 
 export { Checkbox } from "./components/checkbox";
 export {
@@ -61,6 +61,7 @@ export { Skeleton } from "./components/skeleton";
 export { AuditTrail, type AuditTrailEntry } from "./audit-trail";
 export { cn } from "./lib/utils";
 export { EmptyState } from "./empty-state";
+export { ClearFiltersButton, FilterSearchInput, useFilterNavigation } from "./filter-bar";
 export { formatDateTime, formatRelativeTime } from "./format-date";
 export { StatCard } from "./stat-card";
 export { Money, formatMoney } from "./money";
