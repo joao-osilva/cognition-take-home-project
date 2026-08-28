@@ -59,7 +59,7 @@ export function KycCaseScreen({
                 <StatusBadge status={kycCase.status} />
               </Row>
               <Row label="Risk level">
-                <StatusBadge status={kycCase.riskLevel} />
+                <StatusBadge status={kycCase.riskLevel} variant="dot" />
               </Row>
               <Row label="Risk score">
                 <span className="font-mono tabular-nums">{customerRiskScore}</span>
