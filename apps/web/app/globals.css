@@ -1,4 +1,6 @@
 @import "@repo/ui/styles.css";
 
 @source "../../../packages/ui/src";
-@source "../../../packages/apps/*/src";
+@source "../../../packages/apps/kyc/src";
+@source "../../../packages/apps/refunds/src";
+@source "../../../packages/apps/flags/src";

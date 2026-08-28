@@ -11,6 +11,8 @@ import {
   claimCaseAction,
   decideCaseAction,
   escalateCaseAction,
+  releaseCaseAction,
+  removeKycDocumentAction,
   uploadKycDocumentAction,
 } from "../actions";
 
@@ -27,8 +29,11 @@ export default async function KycCasePage({ params }: { params: Promise<{ caseId
   return (
     <KycCaseScreen
       detail={detail}
+      viewerId={actor.id}
       actions={{
         claim: claimCaseAction.bind(null, caseId),
+        release: releaseCaseAction.bind(null, caseId),
+        removeDocument: removeKycDocumentAction.bind(null, caseId),
         decide: decideCaseAction.bind(null, caseId),
         escalate: escalateCaseAction.bind(null, caseId),
         uploadDocument: uploadKycDocumentAction.bind(null, caseId),

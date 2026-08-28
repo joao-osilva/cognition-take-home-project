@@ -7,12 +7,22 @@ import { Button, ReasonDialog, toast } from "@repo/ui";
 
 export interface KycCaseActions {
   claim: () => Promise<ActionResult>;
+  release: () => Promise<ActionResult>;
+  removeDocument: (documentId: string) => Promise<ActionResult>;
   decide: (decision: "approved" | "rejected", reason: string) => Promise<ActionResult>;
   escalate: (reason: string) => Promise<ActionResult>;
   uploadDocument: (formData: FormData) => Promise<ActionResult>;
 }
 
-export function CaseActions({ status, actions }: { status: string; actions: KycCaseActions }) {
+export function CaseActions({
+  status,
+  isAssignee,
+  actions,
+}: {
+  status: string;
+  isAssignee: boolean;
+  actions: KycCaseActions;
+}) {
   const [pending, startTransition] = useTransition();
 
   const run = (fn: () => Promise<ActionResult>, success: string, done?: () => void) =>
@@ -37,7 +47,16 @@ export function CaseActions({ status, actions }: { status: string; actions: KycC
   if (status !== "in_review" && status !== "escalated") return null;
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
+      {status === "in_review" && isAssignee ? (
+        <Button
+          variant="outline"
+          disabled={pending}
+          onClick={() => run(actions.release, "Case released back to the queue")}
+        >
+          Release case
+        </Button>
+      ) : null}
       <ReasonDialog
         title="Approve case"
         description="Record the reason for approving this KYC case."

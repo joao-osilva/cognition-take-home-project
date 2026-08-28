@@ -5,7 +5,14 @@ import { kycCases, kycDocuments } from "./schema";
 
 export type KycCase = typeof kycCases.$inferSelect;
 export type KycDocument = typeof kycDocuments.$inferSelect;
-export type AuditEntry = typeof platformSchema.auditLog.$inferSelect;
+export interface CaseActivityEntry {
+  id: string;
+  actorId: string;
+  actorName: string | null;
+  action: string;
+  createdAt: Date;
+  metadata: unknown;
+}
 
 export interface KycCaseRow {
   kycCase: KycCase;
@@ -17,7 +24,7 @@ export interface KycCaseRow {
 
 export interface KycCaseDetail extends KycCaseRow {
   documents: KycDocument[];
-  auditTrail: AuditEntry[];
+  auditTrail: CaseActivityEntry[];
 }
 
 export async function listKycCases(
@@ -90,8 +97,16 @@ export async function getKycCase(db: Db, caseId: string): Promise<KycCaseDetail 
 
   const documents = await db.select().from(kycDocuments).where(eq(kycDocuments.caseId, caseId));
   const auditTrail = await db
-    .select()
+    .select({
+      id: platformSchema.auditLog.id,
+      actorId: platformSchema.auditLog.actorId,
+      actorName: platformSchema.users.name,
+      action: platformSchema.auditLog.action,
+      createdAt: platformSchema.auditLog.createdAt,
+      metadata: platformSchema.auditLog.metadata,
+    })
     .from(platformSchema.auditLog)
+    .leftJoin(platformSchema.users, eq(platformSchema.auditLog.actorId, platformSchema.users.id))
     .where(
       or(
         eq(platformSchema.auditLog.entityId, caseId),
