@@ -130,7 +130,7 @@ export async function uploadKycDocumentAction(
     blobPathname = blob.pathname;
   } catch (error) {
     console.error("Blob upload failed", error);
-    return { ok: false, error: "Document storage is unavailable — try again later" };
+    return { ok: false, error: "Document storage is unavailable. Try again later." };
   }
 
   const result = await toActionResult(

@@ -58,7 +58,7 @@ export function FlagsScreen({
     <div>
       <PageHeader
         title="Feature Flags"
-        description="Toggle flags per environment — production changes require approval"
+        description="Toggle flags per environment. Production changes require approval."
         actions={canToggle && !archivedView ? <NewFlagDialog onCreate={onCreate} /> : undefined}
       />
       <div className="mb-4 flex flex-wrap items-center gap-3">

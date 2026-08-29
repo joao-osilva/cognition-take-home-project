@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    // The architecture docs page reads these markdown files at request time.
+    "/docs/architecture": ["../../docs/architecture/*.md"],
+  },
   transpilePackages: [
     "@repo/ui",
     "@repo/core",

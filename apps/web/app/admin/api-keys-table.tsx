@@ -143,8 +143,8 @@ function CreateKeyDialog({
             <DialogHeader>
               <DialogTitle>API key created</DialogTitle>
               <DialogDescription>
-                Copy it now — this is the only time it is shown. Callers send it in the{" "}
-                <code>x-api-key</code> header.
+                Copy it now. It won't be shown again. Callers send it in the <code>x-api-key</code>{" "}
+                header.
               </DialogDescription>
             </DialogHeader>
             <div className="bg-muted rounded-md p-3 font-mono text-sm break-all select-all">

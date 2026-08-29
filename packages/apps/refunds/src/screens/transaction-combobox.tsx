@@ -62,7 +62,7 @@ export function TransactionCombobox({
           className="justify-between font-normal"
         >
           {selected
-            ? `${selected.customerName} — ${formatMoney(selected.amount, selected.currency)}`
+            ? `${selected.customerName} · ${formatMoney(selected.amount, selected.currency)}`
             : "Search settled transactions…"}
           <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>

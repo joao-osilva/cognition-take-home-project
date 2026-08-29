@@ -121,7 +121,7 @@ export const uploadDocument = defineAction({
         .where(and(eq(kycDocuments.caseId, input.caseId), eq(kycDocuments.type, input.type)))
         .limit(1);
       if (existing[0]) {
-        throw new Error("This document type is already uploaded — remove it first to replace it");
+        throw new Error("This document type is already uploaded. Remove it first to replace it.");
       }
     }
     const inserted = await db

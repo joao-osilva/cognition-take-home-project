@@ -26,9 +26,9 @@ Power Apps acts as a "marketplace": a portal hosting many apps on shared infrast
 ```
 apps/web/                       # host: routes, shell, platform screens
   app/
-    page.tsx                    # launcher/home
+    page.tsx                    # redirects to /inbox (the landing page)
     kyc/  refunds/  flags/      # thin route files importing package screens
-    admin/  audit/  notifications/
+    admin/  audit/  notifications/  docs/architecture/
     api/inngest/route.ts        # registers all packages' functions
   middleware.ts                 # auth + role checks per path
 packages/
@@ -45,7 +45,7 @@ tooling/generators/app/         # `pnpm gen:app <id>` scaffold
 
 ## Design system
 
-`packages/ui` carries the visual identity on top of shadcn/ui: warm cream neutrals with an ink-black primary and pill-shaped buttons (light + dark themes via `next-themes`), Inter/Geist Mono (mono for money, IDs, timestamps), and shared primitives — `StatusBadge` (semantic tones + dot indicator), `StatCard`, `EmptyState`, `Skeleton`, `PageHeader` (with breadcrumbs), `AuditTrail` timeline, and date formatters. The host provides the responsive shell (`AppShell`): warm-neutral sidebar (a deeper cream shade than the content area) with icons and an ink pill for the active item on desktop, sheet navigation on mobile, sticky header with notification bell and theme toggle. Apps compose these primitives instead of styling ad hoc.
+`packages/ui` carries the visual identity on top of shadcn/ui: warm cream neutrals with an ink-black primary and pill-shaped buttons (light + dark themes via `next-themes`), Inter/Geist Mono (mono for money, IDs, timestamps), and shared primitives — `StatusBadge` (semantic tones + dot indicator), `StatCard`, `EmptyState`, `Skeleton`, `PageHeader` (with breadcrumbs), `AuditTrail` timeline, and date formatters. The host provides the responsive shell (`AppShell`): warm-neutral sidebar (a deeper cream shade than the content area) with labeled groups (Workspace / Apps / Settings / Docs), icons, and an ink pill for the active item on desktop, sheet navigation on mobile, and a sidebar theme toggle. The Inbox nav item carries the unread notification badge. Apps compose these primitives instead of styling ad hoc.
 
 ## New-app journey (end-to-end)
 

@@ -55,7 +55,7 @@ export default async function AuditPage({
     <div>
       <PageHeader
         title="Audit"
-        description="Every mutation and sensitive read across all apps, in one immutable trail"
+        description="A complete record of every change and sensitive read across all apps."
       />
       <AuditFilters
         actors={result.actors}

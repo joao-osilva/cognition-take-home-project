@@ -105,7 +105,7 @@ export function NewFlagDialog({
               </p>
             ) : (
               <p id="flag-key-help" className="text-muted-foreground text-xs">
-                Lowercase, e.g. checkout-v2 — this is what services read from the API.
+                Lowercase, like checkout-v2. Services read this key from the API.
               </p>
             )}
           </div>

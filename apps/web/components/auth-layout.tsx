@@ -18,8 +18,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             One console for fintech operations.
           </h1>
           <p className="text-sidebar-foreground/60 text-sm leading-relaxed">
-            KYC review, refund approvals, and feature flags — with maker-checker guardrails and a
-            complete audit trail built in.
+            KYC review, refund approvals, and feature flags, with maker-checker guardrails and a
+            full audit trail.
           </p>
           <ul className="text-sidebar-foreground/70 space-y-3 text-sm">
             <li className="flex items-center gap-2.5">

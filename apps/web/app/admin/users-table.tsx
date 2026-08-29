@@ -113,7 +113,7 @@ function EditRolesDialog({
         <DialogHeader>
           <DialogTitle>Edit roles</DialogTitle>
           <DialogDescription>
-            {user.name} ({user.email}) — approver roles imply the matching operator role; admin
+            {user.name} ({user.email}). Approver roles include the matching operator role. Admin
             grants everything.
           </DialogDescription>
         </DialogHeader>

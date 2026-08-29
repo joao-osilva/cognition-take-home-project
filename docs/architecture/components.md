@@ -84,7 +84,7 @@ The compliance backbone; must be designed in, not bolted on.
 
 ## 8. Notifications (replaces: Outlook/Teams connectors)
 
-- Thin dispatcher interface: `notify(recipient, type, payload)` writes the `notifications` table; the shell renders a bell with unread count and mark-as-read (a `defineAction()` scoped to the current actor), and `/inbox` gives every user a filterable, paginated history with per-item mark-read and deep links into the relevant app.
+- Thin dispatcher interface: `notify(recipient, type, payload)` writes the `notifications` table; the shell shows an unread-count badge on the Inbox nav item, and `/inbox` (the landing page) gives every user a filterable, paginated history with per-item mark-read (a `defineAction()` scoped to the current actor) and deep links into the relevant app.
 - Triggered synchronously by domain actions (e.g. refund decided) and by Inngest background functions served from `/api/inngest`. Server actions emit events (`refund.approved`, `kyc.case.decided`, `kyc.case.escalated`) after successful mutations; crons cover time-based sweeps. Functions: `kyc-sla-reminder` (hourly SLA sweep, deduped per case), `refund-settlement` (simulated async settlement leg: approved → processed + requester notification + system audit row), `approval-pending-reminder` (hourly, config-driven `approvals.reminder_hours`, deduped per approval, requester excluded per SoD), `kyc-decision-fanout` (assignee notified when someone else decides), `kyc-escalation-fanout` (all `kyc:approver`s except the escalator), and `daily-ops-digest` (one morning summary per approver/admin, deduped per day).
 - Slack/email delivery deliberately deferred (known-gaps #8) — this is where connector-catalog envy starts; resist it until a real need appears.
 

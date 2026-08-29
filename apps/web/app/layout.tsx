@@ -8,10 +8,9 @@ import { hasRole } from "@repo/core";
 import { Toaster } from "@repo/ui";
 
 import { AppShell } from "@/components/app-shell";
-import { NotificationBell } from "@/components/notification-bell";
-import type { NavItem } from "@/components/sidebar-nav";
+import type { NavGroup } from "@/components/sidebar-nav";
 import { getSessionUser } from "@/lib/actor";
-import { getNotificationsForUser } from "@/lib/notifications";
+import { getUnreadNotificationCount } from "@/lib/notifications";
 import { apps } from "@/lib/apps";
 
 import "./globals.css";
@@ -40,25 +39,42 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     );
   }
 
-  const { items: notificationItems, unreadCount } = await getNotificationsForUser(user.id);
+  const unreadCount = await getUnreadNotificationCount(user.id);
 
   const visibleApps = apps.filter((app) => hasRole(user, app.requiredRole));
   const isAdmin = hasRole(user, "admin");
-  const navItems: NavItem[] = [
-    { href: "/", label: "Home", icon: "home" },
-    { href: "/inbox", label: "Inbox", icon: "inbox", badge: unreadCount || undefined },
-    ...visibleApps.map((app, i) => ({
-      href: app.basePath,
-      label: app.name,
-      icon: app.id,
-      separator: i === 0,
-    })),
-    ...(isAdmin
+  const navGroups: NavGroup[] = [
+    {
+      label: "Workspace",
+      items: [{ href: "/inbox", label: "Inbox", icon: "inbox", badge: unreadCount || undefined }],
+    },
+    ...(visibleApps.length > 0
       ? [
-          { href: "/audit", label: "Audit", icon: "audit", separator: true },
-          { href: "/admin", label: "Admin", icon: "admin" },
+          {
+            label: "Apps",
+            items: visibleApps.map((app) => ({
+              href: app.basePath,
+              label: app.name,
+              icon: app.id,
+            })),
+          },
         ]
       : []),
+    ...(isAdmin
+      ? [
+          {
+            label: "Settings",
+            items: [
+              { href: "/audit", label: "Audit", icon: "audit" },
+              { href: "/admin", label: "Admin", icon: "admin" },
+            ],
+          },
+        ]
+      : []),
+    {
+      label: "Docs",
+      items: [{ href: "/docs/architecture", label: "Architecture", icon: "architecture" }],
+    },
   ];
 
   return (
@@ -66,14 +82,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className={`${fontClasses} min-h-screen antialiased`}>
         <ThemeProvider attribute="class" disableTransitionOnChange>
           <ClerkProvider>
-            <AppShell
-              navItems={navItems}
-              userName={user.name}
-              userRoles={user.roles}
-              bell={
-                <NotificationBell notifications={notificationItems} unreadCount={unreadCount} />
-              }
-            >
+            <AppShell navGroups={navGroups} userName={user.name} userRoles={user.roles}>
               {children}
             </AppShell>
             <Toaster />

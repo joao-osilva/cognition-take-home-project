@@ -116,7 +116,7 @@ function AddConfigDialog({
         <DialogHeader>
           <DialogTitle>Add config entry</DialogTitle>
           <DialogDescription>
-            Value is stored as JSON — numbers, strings (quoted), booleans, or objects.
+            Values are stored as JSON. Use numbers, quoted strings, booleans, or objects.
           </DialogDescription>
         </DialogHeader>
         <Input
@@ -184,7 +184,7 @@ function EditConfigDialog({
         <DialogHeader>
           <DialogTitle>Edit {entry.key}</DialogTitle>
           <DialogDescription>
-            Value is stored as JSON — numbers, strings (quoted), booleans, or objects.
+            Values are stored as JSON. Use numbers, quoted strings, booleans, or objects.
           </DialogDescription>
         </DialogHeader>
         <Input value={value} onChange={(e) => setValue(e.target.value)} className="font-mono" />
