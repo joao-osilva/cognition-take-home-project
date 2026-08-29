@@ -16,15 +16,62 @@ classes: {
       border-radius: 8
     }
   }
-  store: {
-    shape: cylinder
-    style: {
-      fill: "#efe9db"
-      stroke: "#5c5748"
-      border-radius: 8
-    }
+}
+
+operators: Ops team\noperators, approvers, admins {
+  shape: person
+  style.fill: "#f6f1e7"
+}
+
+services: Product services\nread feature flags {
+  class: external
+  style.multiple: true
+}
+
+clerk: Clerk\nauthentication, roles {
+  class: external
+  icon: ./icons/clerk.svg
+}
+
+github: GitHub\ncode, CI/CD {
+  class: external
+  icon: ./icons/github.svg
+}
+
+inngest: Inngest\nbackground jobs {
+  class: external
+  icon: ./icons/inngest.png
+}
+
+blob: Vercel Blob\nprivate KYC documents {
+  class: external
+  icon: ./icons/vercel.svg
+}
+
+neon: Neon Postgres\ndomain + audit + platform tables {
+  shape: cylinder
+  style: {
+    fill: "#efe9db"
+    stroke: "#5c5748"
   }
-  kernel: {
+  icon: ./icons/neon.svg
+}
+
+platform: "Internal tools platform" {
+  style: {
+    fill: "#fdfaf3"
+    stroke: "#5c5748"
+    border-radius: 12
+  }
+  icon: ./icons/nextjs.svg
+
+  label: "Internal tools platform\nNext.js on Vercel"
+
+  kyc: KYC review {style.fill: "#efe9db"}
+  refunds: Refunds {style.fill: "#efe9db"}
+  flags: Feature flags {style.fill: "#efe9db"}
+
+  kernel: Shared kernel\nRBAC, maker-checker approvals,\naudit log, notifications {
     style: {
       fill: "#1c1a16"
       stroke: "#1c1a16"
@@ -32,92 +79,17 @@ classes: {
       border-radius: 8
     }
   }
+
+  kyc -> kernel
+  refunds -> kernel
+  flags -> kernel
 }
 
-operators: Ops users\n(operators, approvers, admins) {
-  shape: person
-  style.fill: "#f6f1e7"
-}
-
-services: Product services {
-  class: external
-  style.multiple: true
-}
-
-clerk: Clerk\nauthentication {
-  class: external
-}
-
-inngest: Inngest\nbackground jobs {
-  class: external
-}
-
-blob: Vercel Blob\nprivate KYC documents {
-  class: external
-}
-
-web: "Next.js host (apps/web)" {
-  style: {
-    fill: "#fdfaf3"
-    stroke: "#5c5748"
-    border-radius: 12
-  }
-
-  shell: App shell\nsidebar, RBAC-filtered nav, inbox {
-    style.fill: "#efe9db"
-  }
-
-  apps: "App packages (packages/apps/*)" {
-    style: {
-      fill: "#fdfaf3"
-      stroke-dash: 3
-      stroke: "#8a8577"
-      border-radius: 10
-    }
-    kyc: KYC review {style.fill: "#efe9db"}
-    refunds: Refunds {style.fill: "#efe9db"}
-    flags: Feature flags {style.fill: "#efe9db"}
-  }
-
-  kernel: "Kernel (packages/core)" {
-    class: kernel
-    action: "defineAction()\nauth → roles → validation → domain → audit" {class: kernel}
-    approvals: Approval engine\nmaker-checker, SoD {class: kernel}
-    audit: Audit writer\nappend-only {class: kernel}
-    notify: Notifications {class: kernel}
-    config: App config {class: kernel}
-  }
-
-  api: "/api/flags\nread-only, per-consumer API keys" {
-    style.fill: "#efe9db"
-  }
-
-  shell -> apps
-  apps -> kernel: every mutation
-}
-
-db: Neon Postgres {
-  class: store
-  domain: Domain tables\ncases, refunds, flags {
-    style.fill: "#fdfaf3"
-    style.stroke: "#8a8577"
-  }
-  platform: Platform tables\nusers, audit_log, approvals,\nnotifications, app_config, api_keys {
-    style.fill: "#fdfaf3"
-    style.stroke: "#8a8577"
-  }
-}
-
-operators -> web.shell: HTTPS
+operators -> platform: use the apps over HTTPS
 operators -> clerk: sign in {style.stroke-dash: 3}
-clerk -> web.shell: session + roles
-clerk -> db.platform: user sync webhook {style.stroke-dash: 3}
-
-web.kernel -> db
-web.apps -> db.domain: reads
-web.apps.kyc -> blob: upload / stream\n(audited reads) {style.stroke-dash: 3}
-
-inngest -> web.kernel: SLA reminders, settlement,\nfan-outs, daily digest
-
-services -> web.api: GET flags snapshot
-web.api -> db: key lookup + flag read
+clerk -> platform: session + roles
+services -> platform: GET /api/flags\nper-consumer API keys
+platform -> neon: reads / audited writes
+platform.kyc -> blob: upload / stream documents {style.stroke-dash: 3}
+inngest -> platform: SLA reminders, settlement, digests
+github -> platform: deploys via Vercel {style.stroke-dash: 3}

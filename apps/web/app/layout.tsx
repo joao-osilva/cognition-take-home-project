@@ -73,7 +73,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       : []),
     {
       label: "Docs",
-      items: [{ href: "/docs/architecture", label: "Architecture", icon: "architecture" }],
+      items: [
+        { href: "/docs/architecture", label: "Architecture", icon: "architecture" },
+        { href: "/docs/tbd", label: "TBD", icon: "tbd" },
+      ],
     },
   ];
 
