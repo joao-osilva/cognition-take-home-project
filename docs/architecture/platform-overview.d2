@@ -2,7 +2,7 @@ direction: down
 
 vars: {
   d2-config: {
-    sketch: true
+    sketch: false
     theme-id: 105
     layout-engine: elk
   }
@@ -56,7 +56,7 @@ classes: {
     style: {
       fill: "#f6f1e7"
       stroke: "#8a8577"
-      border-radius: 10
+      border-radius: 24
       stroke-dash: 3
     }
   }
@@ -80,19 +80,24 @@ layout: "" {
   consumers: Consumers {
     class: layer
     width: 1468
-    grid-columns: 3
-    grid-gap: 200
+    grid-columns: 4
+    grid-gap: 20
 
     services: Product services\nread feature flags {
       class: external
       style.multiple: true
+    }
+    cmid: "" {
+      class: spacer
+      width: 320
+      height: 110
     }
     operators: Ops team\noperators, approvers, admins {
       class: external
     }
     cgap: "" {
       class: spacer
-      width: 168
+      width: 148
       height: 110
     }
   }
@@ -107,7 +112,7 @@ layout: "" {
 
     agap: "" {
       class: spacer
-      width: 52
+      width: 352
       height: 150
     }
     clerk: Clerk\nauthentication, roles {
@@ -145,13 +150,19 @@ layout: "" {
 
       apis: API {
         class: group
-        label.near: top-left
         grid-rows: 2
+        grid-columns: 2
         grid-gap: 30
 
         flags: "GET /api/flags\nREST, API-key auth" {
           class: module
           width: 280
+        }
+
+        agap1: "" {
+          class: spacer
+          width: 120
+          height: 70
         }
         jobs: "POST /api/inngest\nfunction invocations" {
           class: module
