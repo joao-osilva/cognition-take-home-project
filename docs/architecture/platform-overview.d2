@@ -9,7 +9,33 @@ vars: {
 }
 
 classes: {
+  layer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: "#8a8577"
+    }
+  }
+  spacer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: transparent
+    }
+  }
   external: {
+    width: 280
+    height: 110
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 8
+    }
+  }
+  service: {
+    width: 280
+    height: 150
+    label.near: top-center
     style: {
       fill: "#f6f1e7"
       stroke: "#8a8577"
@@ -18,78 +44,111 @@ classes: {
   }
 }
 
-operators: Ops team\noperators, approvers, admins {
-  shape: person
-  style.fill: "#f6f1e7"
-}
+layout: "" {
+  class: layer
+  grid-rows: 4
+  grid-columns: 3
+  grid-gap: 60
 
-services: Product services\nread feature flags {
-  class: external
-  style.multiple: true
-}
+  s1: "" {class: spacer}
+  consumers: Consumers {
+    class: layer
+    grid-columns: 2
+    grid-gap: 40
 
-clerk: Clerk\nauthentication, roles {
-  class: external
-  icon: ./icons/clerk.svg
-}
+    operators: Ops team\noperators, approvers, admins {
+      class: external
+    }
 
-github: GitHub\ncode, CI/CD {
-  class: external
-  icon: ./icons/github.svg
-}
-
-inngest: Inngest\nbackground jobs {
-  class: external
-  icon: ./icons/inngest.png
-}
-
-blob: Vercel Blob\nprivate KYC documents {
-  class: external
-  icon: ./icons/vercel.svg
-}
-
-neon: Neon Postgres\ndomain + audit + platform tables {
-  shape: cylinder
-  style: {
-    fill: "#efe9db"
-    stroke: "#5c5748"
+    services: Product services\nread feature flags {
+      class: external
+      style.multiple: true
+    }
   }
-  icon: ./icons/neon.svg
-}
+  s2: "" {class: spacer}
 
-platform: "Internal tools platform" {
-  style: {
-    fill: "#fdfaf3"
-    stroke: "#5c5748"
-    border-radius: 12
+  s3: "" {class: spacer}
+  auth: "" {
+    class: layer
+    clerk: Clerk\nauthentication, roles {
+      class: service
+      icon: ./icons/clerk.svg
+    }
   }
-  icon: ./icons/nextjs.svg
+  s4: "" {class: spacer}
 
-  label: "Internal tools platform\nNext.js on Vercel"
-
-  kyc: KYC review {style.fill: "#efe9db"}
-  refunds: Refunds {style.fill: "#efe9db"}
-  flags: Feature flags {style.fill: "#efe9db"}
-
-  kernel: Shared kernel\nRBAC, maker-checker approvals,\naudit log, notifications {
+  jobs: "" {
+    class: layer
+    inngest: Inngest\nbackground jobs {
+      class: service
+      icon: ./icons/inngest.png
+    }
+  }
+  platform: "Internal tools platform" {
     style: {
-      fill: "#1c1a16"
-      stroke: "#1c1a16"
-      font-color: "#faf6ec"
-      border-radius: 8
+      fill: "#fdfaf3"
+      stroke: "#5c5748"
+      border-radius: 12
+    }
+    icon: ./icons/nextjs.svg
+
+    label: "Internal tools platform\nNext.js on Vercel"
+
+    kyc: KYC review {style.fill: "#efe9db"}
+    refunds: Refunds {style.fill: "#efe9db"}
+    flags: Feature flags {style.fill: "#efe9db"}
+
+    kernel: Shared kernel\nRBAC, maker-checker approvals,\naudit log, notifications {
+      style: {
+        fill: "#1c1a16"
+        stroke: "#1c1a16"
+        font-color: "#faf6ec"
+        border-radius: 8
+      }
+    }
+
+    kyc -> kernel
+    refunds -> kernel
+    flags -> kernel
+  }
+  storage: Storage {
+    class: layer
+    grid-rows: 2
+    grid-gap: 40
+
+    neon: Neon Postgres\ndomain + audit + platform tables {
+      shape: cylinder
+      width: 320
+      height: 200
+      label.near: top-center
+      style: {
+        fill: "#efe9db"
+        stroke: "#5c5748"
+      }
+      icon: ./icons/neon.svg
+    }
+
+    blob: Vercel Blob\nprivate KYC documents {
+      class: service
+      icon: ./icons/vercel.svg
     }
   }
 
-  kyc -> kernel
-  refunds -> kernel
-  flags -> kernel
-}
+  s5: "" {class: spacer}
+  cicd: "" {
+    class: layer
+    github: GitHub\ncode, CI/CD {
+      class: service
+      icon: ./icons/github.svg
+    }
+  }
+  s6: "" {class: spacer}
 
-operators -> platform: use the apps over HTTPS
-operators -> clerk: sign in {style.stroke-dash: 3}
-clerk -> platform: session + roles
-services -> platform: GET /api/flags\nper-consumer API keys
-platform -> neon: reads / audited writes
-platform.kyc -> blob: upload / stream documents {style.stroke-dash: 3}
-inngest -> platform: SLA reminders, settlement, digests
-github -> platform: deploys via Vercel {style.stroke-dash: 3}
+  consumers.operators -> auth.clerk: sign in
+  auth.clerk -> platform: session + roles
+  consumers.services -> platform: GET /api/flags\nper-consumer API keys
+  platform -> storage.neon: reads / audited writes
+  platform -> storage.blob: upload / stream\nKYC documents {style.stroke-dash: 3}
+  jobs.inngest -> platform: SLA reminders,\nsettlement, digests
+  cicd.github -> platform: deploys via Vercel {style.stroke-dash: 3}
+}
