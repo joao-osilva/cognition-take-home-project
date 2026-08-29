@@ -80,21 +80,16 @@ layout: "" {
   consumers: Consumers {
     class: layer
     width: 1468
-    grid-columns: 3
+    grid-columns: 2
     grid-gap: 120
 
     cgap: "" {
       class: spacer
-      width: 280
+      width: 92
       height: 110
     }
     operators: Ops team\noperators, approvers, admins {
       class: external
-    }
-
-    services: Product services\nread feature flags {
-      class: external
-      style.multiple: true
     }
   }
   s2: "" {class: spacer}
@@ -103,28 +98,31 @@ layout: "" {
   auth: "" {
     class: layer
     width: 1468
-    grid-columns: 3
+    grid-columns: 2
     grid-gap: 120
 
     agap: "" {
       class: spacer
-      width: 280
+      width: 92
       height: 150
     }
     clerk: Clerk\nauthentication, roles {
       class: service
       icon: ./icons/clerk.svg
     }
-    gap: "" {
-      class: spacer
-      width: 280
-      height: 150
-    }
   }
   s4: "" {class: spacer}
 
-  jobs: "" {
+  side: "" {
     class: layer
+    grid-rows: 2
+    grid-gap: 60
+
+    services: Product services\nread feature flags {
+      class: external
+      style.multiple: true
+    }
+
     inngest: Inngest\nbackground jobs {
       class: service
       icon: ./icons/inngest.png
@@ -133,7 +131,7 @@ layout: "" {
   platform: "Internal tools platform" {
     grid-rows: 3
     grid-gap: 40
-    label.near: top-center
+    label.near: top-right
     style: {
       fill: "#fdfaf3"
       stroke: "#5c5748"
@@ -145,20 +143,32 @@ layout: "" {
 
     entry: "" {
       class: layer
-      grid-columns: 3
+      grid-columns: 2
       grid-gap: 120
 
-      jobsapi: "POST /api/inngest\nfunction invocations" {
-        class: module
-        width: 280
+      apis: "" {
+        class: layer
+        grid-rows: 2
+        grid-gap: 40
+
+        flags: "GET /api/flags\nREST, API-key auth" {
+          class: module
+          width: 280
+        }
+        jobs: "POST /api/inngest\nfunction invocations" {
+          class: module
+          width: 280
+        }
       }
-      web: App routes\nserver actions {
-        class: module
-        width: 280
-      }
-      api: "GET /api/flags\nREST, API-key auth" {
-        class: module
-        width: 280
+      webwrap: "" {
+        class: layer
+        grid-rows: 1
+
+        web: App routes\nserver actions {
+          class: module
+          width: 280
+          height: 70
+        }
       }
     }
 
@@ -222,10 +232,10 @@ layout: "" {
   s6: "" {class: spacer}
 
   consumers.operators -> auth.clerk: sign in
-  auth.clerk -> platform.entry.web: session + roles
-  consumers.services -> platform.entry.api: flag reads\nper-consumer API keys
+  auth.clerk -> platform.entry.webwrap.web: session + roles
+  side.services -> platform.entry.apis.flags: flag reads\nper-consumer API keys
   platform -> storage.neon: reads /\naudited writes
   platform -> storage.blob: KYC documents {style.stroke-dash: 3}
-  jobs.inngest -> platform.entry.jobsapi: SLA reminders,\nsettlement, digests
+  side.inngest -> platform.entry.apis.jobs: SLA reminders,\nsettlement, digests
   github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
 }
