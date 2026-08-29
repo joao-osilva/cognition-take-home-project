@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     // The architecture docs page reads these markdown files at request time.
     "/docs/architecture": ["../../docs/architecture/*.md"],
+    "/docs/architecture/assets/[name]": ["../../docs/architecture/*.svg"],
   },
   transpilePackages: [
     "@repo/ui",

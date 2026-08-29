@@ -28,6 +28,17 @@ export function Markdown({ source }: { source: string }) {
           </a>
         ),
         em: ({ children }) => <em className="text-muted-foreground">{children}</em>,
+        img: ({ src, alt }) => (
+          <img
+            src={
+              typeof src === "string"
+                ? src.replace(/^\.\//, "/docs/architecture/assets/")
+                : undefined
+            }
+            alt={alt ?? ""}
+            className="my-4 w-full rounded-lg border bg-white p-2"
+          />
+        ),
         code: ({ className, children }) =>
           className ? (
             <code className={`${className} font-mono text-xs`}>{children}</code>
