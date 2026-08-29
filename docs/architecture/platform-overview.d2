@@ -42,19 +42,46 @@ classes: {
       border-radius: 8
     }
   }
+  band: {
+    height: 150
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 8
+    }
+  }
+  group: {
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 10
+      stroke-dash: 3
+    }
+  }
+  module: {
+    style: {
+      fill: "#efe9db"
+      stroke: "#5c5748"
+      border-radius: 6
+    }
+  }
 }
 
 layout: "" {
   class: layer
   grid-rows: 4
   grid-columns: 3
-  grid-gap: 60
+  horizontal-gap: 160
+  vertical-gap: 110
 
   s1: "" {class: spacer}
   consumers: Consumers {
     class: layer
+    width: 1068
     grid-columns: 2
-    grid-gap: 40
+    grid-gap: 120
 
     operators: Ops team\noperators, approvers, admins {
       class: external
@@ -70,9 +97,18 @@ layout: "" {
   s3: "" {class: spacer}
   auth: "" {
     class: layer
+    width: 1068
+    grid-columns: 2
+    grid-gap: 120
+
     clerk: Clerk\nauthentication, roles {
       class: service
       icon: ./icons/clerk.svg
+    }
+    gap: "" {
+      class: spacer
+      width: 280
+      height: 150
     }
   }
   s4: "" {class: spacer}
@@ -85,6 +121,9 @@ layout: "" {
     }
   }
   platform: "Internal tools platform" {
+    grid-rows: 3
+    grid-gap: 40
+    label.near: top-center
     style: {
       fill: "#fdfaf3"
       stroke: "#5c5748"
@@ -94,22 +133,48 @@ layout: "" {
 
     label: "Internal tools platform\nNext.js on Vercel"
 
-    kyc: KYC review {style.fill: "#efe9db"}
-    refunds: Refunds {style.fill: "#efe9db"}
-    flags: Feature flags {style.fill: "#efe9db"}
+    entry: "" {
+      class: layer
+      grid-columns: 2
+      grid-gap: 120
 
-    kernel: Shared kernel\nRBAC, maker-checker approvals,\naudit log, notifications {
-      style: {
-        fill: "#1c1a16"
-        stroke: "#1c1a16"
-        font-color: "#faf6ec"
-        border-radius: 8
+      web: App routes\nserver actions {
+        class: module
+        width: 280
+      }
+      api: "GET /api/flags\nREST, API-key auth" {
+        class: module
+        width: 280
       }
     }
 
-    kyc -> kernel
-    refunds -> kernel
-    flags -> kernel
+    apps: Apps {
+      class: group
+      grid-columns: 3
+      grid-gap: 30
+
+      kyc: KYC review {class: module; width: 290}
+      refunds: Refunds {class: module; width: 290}
+      flags: Feature flags {class: module; width: 290}
+    }
+
+    packages: Packages {
+      class: group
+      grid-columns: 4
+      grid-gap: 30
+
+      core: "@repo/core\nRBAC, approvals,\naudit, notifications" {
+        style: {
+          fill: "#1c1a16"
+          stroke: "#1c1a16"
+          font-color: "#faf6ec"
+          border-radius: 6
+        }
+      }
+      db: "@repo/db\nDrizzle schema" {class: module}
+      ui: "@repo/ui\ndesign system" {class: module}
+      config: "@repo/config\nshared tooling" {class: module}
+    }
   }
   storage: Storage {
     class: layer
@@ -135,20 +200,17 @@ layout: "" {
   }
 
   s5: "" {class: spacer}
-  cicd: "" {
-    class: layer
-    github: GitHub\ncode, CI/CD {
-      class: service
-      icon: ./icons/github.svg
-    }
+  github: GitHub\ncode, CI/CD {
+    class: band
+    icon: ./icons/github.svg
   }
   s6: "" {class: spacer}
 
   consumers.operators -> auth.clerk: sign in
-  auth.clerk -> platform: session + roles
-  consumers.services -> platform: GET /api/flags\nper-consumer API keys
-  platform -> storage.neon: reads / audited writes
-  platform -> storage.blob: upload / stream\nKYC documents {style.stroke-dash: 3}
+  auth.clerk -> platform.entry.web: session + roles
+  consumers.services -> platform.entry.api: flag reads\nper-consumer API keys
+  platform -> storage.neon: reads /\naudited writes
+  platform -> storage.blob: KYC documents {style.stroke-dash: 3}
   jobs.inngest -> platform: SLA reminders,\nsettlement, digests
-  cicd.github -> platform: deploys via Vercel {style.stroke-dash: 3}
+  github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
 }
