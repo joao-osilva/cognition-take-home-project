@@ -34,7 +34,7 @@ classes: {
   }
   service: {
     width: 280
-    height: 150
+    height: 170
     label.near: top-center
     style: {
       fill: "#f6f1e7"
@@ -228,7 +228,7 @@ layout: "" {
     neon: Neon Postgres\ndomain + audit + platform tables {
       shape: cylinder
       width: 320
-      height: 200
+      height: 240
       label.near: top-center
       style: {
         fill: "#efe9db"
@@ -257,4 +257,6 @@ layout: "" {
   platform -> storage.blob: KYC documents {style.stroke-dash: 3}
   side.inngest -> platform.entry.apis.jobs: SLA reminders,\nsettlement, digests
   github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
+
+  (** -> **)[*].style.font-size: 20
 }
