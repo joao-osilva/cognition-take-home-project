@@ -89,7 +89,7 @@ layout: "" {
     }
     cmid: "" {
       class: spacer
-      width: 320
+      width: 310
       height: 110
     }
     operators: Ops team\noperators, approvers, admins {
@@ -97,7 +97,7 @@ layout: "" {
     }
     cgap: "" {
       class: spacer
-      width: 148
+      width: 70
       height: 110
     }
   }
@@ -112,7 +112,7 @@ layout: "" {
 
     agap: "" {
       class: spacer
-      width: 352
+      width: 420
       height: 150
     }
     clerk: Clerk\nauthentication, roles {
@@ -124,7 +124,14 @@ layout: "" {
 
   side: "" {
     class: layer
+    grid-rows: 2
+    grid-gap: 0
 
+    sgap: "" {
+      class: spacer
+      width: 280
+      height: 298
+    }
     inngest: Inngest\nbackground jobs {
       class: service
       icon: ./icons/inngest.png
@@ -132,8 +139,8 @@ layout: "" {
   }
   platform: "Internal tools platform" {
     grid-rows: 3
-    grid-gap: 40
-    label.near: top-right
+    grid-gap: 28
+    label.near: top-center
     style: {
       fill: "#fdfaf3"
       stroke: "#5c5748"
@@ -145,6 +152,7 @@ layout: "" {
 
     entry: "" {
       class: layer
+      height: 365
       grid-columns: 2
       grid-gap: 120
 
