@@ -25,6 +25,25 @@ tooling/generators/app/   # pnpm gen:app <id>
 
 ## Getting started
 
+### Docker (recommended)
+
+Requires Docker with Compose. Clerk keys are the only external dependency:
+
+```bash
+cp .env.example .env      # set the Clerk keys (see below); DATABASE_URL can stay empty
+docker compose up --build # Postgres + migrations + web app + Inngest dev server
+docker compose exec web pnpm db:seed  # demo dataset (first run)
+```
+
+The app is at http://localhost:3000 and the Inngest dev UI at
+http://localhost:8288. Postgres data persists in the `pgdata` volume
+(`docker compose down -v` resets it). `BLOB_READ_WRITE_TOKEN` is optional —
+without it everything works except KYC document upload/viewing.
+
+### Without Docker
+
+Requires Node 20+, pnpm 9, and a Postgres database (local or Neon):
+
 ```bash
 pnpm install
 cp .env.example apps/web/.env.local  # set DATABASE_URL + Clerk keys

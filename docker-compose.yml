@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: platform
+      POSTGRES_DB: platform
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U platform"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  web:
+    build: .
+    # `pnpm --filter web dev` (not `pnpm dev`): turbo's strict env mode would
+    # strip the env vars injected here before they reach Next.js.
+    command: sh -c "pnpm db:migrate && pnpm --filter web dev"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://platform:platform@db:5432/platform
+      INNGEST_DEV: "1"
+      INNGEST_BASE_URL: http://inngest:8288
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  inngest:
+    image: inngest/inngest:latest
+    command: inngest dev -u http://web:3000/api/inngest --no-discovery
+    ports:
+      - "8288:8288"
+
+volumes:
+  pgdata:
