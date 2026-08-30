@@ -40,6 +40,19 @@ http://localhost:8288. Postgres data persists in the `pgdata` volume
 (`docker compose down -v` resets it). `BLOB_READ_WRITE_TOKEN` is optional —
 without it everything works except KYC document upload/viewing.
 
+### Getting Clerk keys
+
+1. Create a free account at [dashboard.clerk.com](https://dashboard.clerk.com) and create an application (any name, email sign-in is enough).
+2. Open **Configure → API keys**, pick **Next.js**, and copy the two keys into
+   `.env`: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (`pk_test_...`) and
+   `CLERK_SECRET_KEY` (`sk_test_...`).
+3. Sign up in the app at http://localhost:3000/sign-in — new sign-ups get the
+   `admin` role by default (demo convenience), so you can immediately assign
+   roles to others at `/admin`.
+
+Development keys work on localhost as-is; no domain or webhook setup is needed
+to run locally.
+
 ### Without Docker
 
 Requires Node 20+, pnpm 9, and a Postgres database (local or Neon):
