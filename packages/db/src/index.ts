@@ -6,19 +6,22 @@ import { Pool } from "pg";
 
 export type Db = PgDatabase<PgQueryResultHKT>;
 
-function isNeonUrl(url: string): boolean {
-  return new URL(url).hostname.endsWith(".neon.tech");
+// Local hosts: localhost, loopback IPs, and bare hostnames like Docker
+// Compose service names (no dot).
+function isLocalUrl(url: string): boolean {
+  const host = new URL(url).hostname;
+  return host === "localhost" || host === "127.0.0.1" || !host.includes(".");
 }
 
-// Neon's HTTP driver for Neon databases; node-postgres for any other Postgres
-// (local dev, Docker).
+// node-postgres for local dev and Docker; Neon's HTTP driver everywhere else
+// (deployed environments).
 export function createDb(): Db {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
-  if (isNeonUrl(url)) {
-    return drizzleNeon(neon(url)) as unknown as Db;
+  if (isLocalUrl(url)) {
+    return drizzlePg(new Pool({ connectionString: url })) as unknown as Db;
   }
-  return drizzlePg(new Pool({ connectionString: url })) as unknown as Db;
+  return drizzleNeon(neon(url)) as unknown as Db;
 }
 
 export * as coreSchema from "./schema/core";
