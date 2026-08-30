@@ -209,12 +209,14 @@ layout: "" {
 
     apps: Apps {
       class: group
-      grid-columns: 3
-      grid-gap: 30
+      grid-columns: 5
+      grid-gap: 20
 
-      kyc: KYC review {class: module; width: 340}
-      refunds: Refunds {class: module; width: 340}
-      flags: Feature flags {class: module; width: 340}
+      lgap: "" {class: spacer; width: 144; height: 60}
+      kyc: KYC review {class: module; width: 282}
+      refunds: Refunds {class: module; width: 282}
+      flags: Feature flags {class: module; width: 282}
+      rgap: "" {class: spacer; width: 16; height: 60}
     }
 
     packages: Packages {
@@ -274,8 +276,8 @@ layout: "" {
   consumers.services -> platform.entry.apis.flags: flag reads\nper-consumer API keys
   platform -> storage.neon: reads /\naudited writes
   platform -> storage.blob: KYC documents {style.stroke-dash: 3}
-  platform.entry.apis -> platform.apps: handled by
-  platform.entry.webwrap.web -> platform.apps: handled by
+  platform.entry.apis -> platform.apps.kyc: handled by
+  platform.entry.webwrap.web -> platform.apps.flags: handled by
   side.inngest -> platform.entry.apis.jobs: SLA reminders,\nsettlement, digests
   github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
 
