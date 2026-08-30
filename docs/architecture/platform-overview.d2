@@ -269,6 +269,8 @@ layout: "" {
   consumers.services -> platform.entry.apis.flags: flag reads\nper-consumer API keys
   platform -> storage.neon: reads /\naudited writes
   platform -> storage.blob: KYC documents {style.stroke-dash: 3}
+  platform.entry.apis -> platform.apps: handled by
+  platform.entry.webwrap.web -> platform.apps: handled by
   side.inngest -> platform.entry.apis.jobs: SLA reminders,\nsettlement, digests
   github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
 
