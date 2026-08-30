@@ -174,7 +174,7 @@ layout: "" {
 
         agap1: "" {
           class: spacer
-          width: 120
+          width: 40
           height: 70
         }
         jobs: "POST /api/inngest\nfunction invocations" {
@@ -185,6 +185,14 @@ layout: "" {
       webwrap: "" {
         class: layer
         grid-rows: 1
+        grid-columns: 2
+        grid-gap: 0
+
+        wgap: "" {
+          class: spacer
+          width: 140
+          height: 70
+        }
 
         web: App routes\nserver actions {
           class: module
