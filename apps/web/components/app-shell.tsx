@@ -59,11 +59,11 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="bg-sidebar border-sidebar-border fixed inset-y-0 z-30 hidden w-60 flex-col border-r md:flex">
+      <aside className="bg-sidebar border-sidebar-border fixed inset-y-0 z-30 hidden w-60 flex-col border-r md:flex print:hidden!">
         {sidebarBody}
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col md:ml-60">
-        <header className="bg-background/80 sticky top-0 z-20 flex h-14 items-center gap-2 border-b px-4 backdrop-blur md:px-8">
+      <div className="flex min-w-0 flex-1 flex-col md:ml-60 print:ml-0!">
+        <header className="bg-background/80 sticky top-0 z-20 flex h-14 items-center gap-2 border-b px-4 backdrop-blur md:px-8 print:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <button

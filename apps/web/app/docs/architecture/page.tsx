@@ -2,6 +2,8 @@ import { PageHeader } from "@repo/ui";
 
 import { getSessionUser } from "@/lib/actor";
 
+import { DownloadPdfButton } from "./download-pdf-button";
+
 export const dynamic = "force-dynamic";
 
 const repoTree = `cognition-take-home-project/
@@ -30,8 +32,9 @@ export default async function ArchitecturePage() {
       <PageHeader
         title="Architecture"
         description="A high-level view of the platform and the services it runs on."
+        actions={<DownloadPdfButton />}
       />
-      <article className="bg-card rounded-lg border p-6 shadow-xs md:p-8">
+      <article className="bg-card rounded-lg border p-6 shadow-xs md:p-8 print:border-0 print:p-0 print:shadow-none">
         <div className="text-foreground/90 space-y-4 text-sm leading-relaxed [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2:not(:first-child)]:mt-8">
           <h2>Approach</h2>
           <p>
