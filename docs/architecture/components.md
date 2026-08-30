@@ -4,7 +4,7 @@ _Context: a fintech engineering team building internal tools. The goal is not "3
 
 ## Component map
 
-The high-level platform diagram lives in `platform-overview.d2` (rendered to `platform-overview.svg`, shown on the in-app Architecture page). Regenerate the SVG with `d2 platform-overview.d2 platform-overview.svg` after editing it.
+The high-level platform diagram lives in `platform-overview.d2` (rendered to `platform-overview.svg`, shown on the in-app Architecture page). Regenerate the SVG with `d2 platform-overview.d2 platform-overview.svg` after editing it, and the PNG (used by the downloadable PDF) with `rsvg-convert -w 2200 platform-overview.svg -o platform-overview.png`.
 
 ## 1. Identity & authentication (replaces: Entra ID integration)
 
