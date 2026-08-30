@@ -32,7 +32,7 @@ export default async function ArchitecturePage() {
         description="A high-level view of the platform and the services it runs on."
       />
       <article className="bg-card rounded-lg border p-6 shadow-xs md:p-8">
-        <div className="text-foreground/90 max-w-prose space-y-4 text-sm leading-relaxed [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2:not(:first-child)]:mt-8">
+        <div className="text-foreground/90 space-y-4 text-sm leading-relaxed [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2:not(:first-child)]:mt-8">
           <h2>Approach</h2>
           <p>
             I leveraged no-ops solutions for most of the components, services that could provide the
