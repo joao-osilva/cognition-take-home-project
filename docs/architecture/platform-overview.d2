@@ -248,8 +248,18 @@ layout: "" {
   }
   storage: Storage {
     class: layer
-    grid-rows: 2
-    grid-gap: 40
+    grid-rows: 4
+    vertical-gap: 0
+
+    tsp: "" {class: spacer; width: 320; height: 120}
+
+    blob: Vercel Blob\nprivate KYC documents {
+      class: service
+      icon: ./icons/vercel.svg
+      icon.near: bottom-center
+    }
+
+    msp: "" {class: spacer; width: 320; height: 354}
 
     neon: Neon Postgres\ndomain + audit + platform tables {
       shape: cylinder
@@ -261,12 +271,6 @@ layout: "" {
         stroke: "#5c5748"
       }
       icon: ./icons/neon.svg
-      icon.near: bottom-center
-    }
-
-    blob: Vercel Blob\nprivate KYC documents {
-      class: service
-      icon: ./icons/vercel.svg
       icon.near: bottom-center
     }
   }
