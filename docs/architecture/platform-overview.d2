@@ -275,13 +275,41 @@ layout: "" {
     }
   }
 
-  s5: "" {class: spacer}
+  # invisible elbow: the dot sits under Inngest so the deploy edge leaves the
+  # CI/CD band horizontally and turns 90 degrees up.
+  s5: "" {
+    class: spacer
+    grid-columns: 3
+    grid-gap: 0
+    p1: "" {class: spacer; width: 137; height: 130}
+    dot: "" {
+      class: spacer
+      grid-rows: 2
+      grid-gap: 0
+      up: "" {class: spacer; width: 6; height: 63}
+      d: "" {class: spacer; width: 6; height: 4}
+    }
+    p2: "" {class: spacer; width: 137; height: 130}
+  }
   github: GitHub\ncode, CI/CD {
     class: band
     icon: ./icons/github.svg
     icon.near: bottom-center
   }
-  s6: "" {class: spacer}
+  s6: "" {
+    class: spacer
+    grid-columns: 3
+    grid-gap: 0
+    p1: "" {class: spacer; width: 214; height: 130}
+    dot: "" {
+      class: spacer
+      grid-rows: 2
+      grid-gap: 0
+      up: "" {class: spacer; width: 6; height: 63}
+      d: "" {class: spacer; width: 6; height: 4}
+    }
+    p2: "" {class: spacer; width: 100; height: 130}
+  }
 
   consumers.operators -> auth.clerk: sign in
   auth.clerk -> platform.entry.webwrap.web: session + roles
@@ -292,7 +320,18 @@ layout: "" {
   platform.entry.webwrap.web -> platform.apps.a2: handled by
   side.inngest <-> platform.entry.apis.jobs: events out,\nfunction runs back
   github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
-  github -> storage.neon: runs migrations\non deploy {style.stroke-dash: 3}
+  # deploy-time side effects: leave the CI/CD band sideways, then turn 90°
+  # into Neon / Inngest via invisible corner nodes.
+  github -> s6.dot.d: runs migrations\non deploy {
+    style.stroke-dash: 3
+    target-arrowhead: {shape: none}
+  }
+  s6.dot.d -> storage.neon: {style.stroke-dash: 3}
+  github -> s5.dot.d: syncs functions\non deploy {
+    style.stroke-dash: 3
+    target-arrowhead: {shape: none}
+  }
+  s5.dot.d -> side.inngest: {style.stroke-dash: 3}
 
   (** -> **)[*].style.font-size: 20
 }
