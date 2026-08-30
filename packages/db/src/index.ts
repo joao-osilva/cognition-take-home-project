@@ -6,12 +6,15 @@ import { Pool } from "pg";
 
 export type Db = PgDatabase<PgQueryResultHKT>;
 
+// Local hosts: localhost, loopback IPs, and bare hostnames like Docker
+// Compose service names (no dot).
 function isLocalUrl(url: string): boolean {
   const host = new URL(url).hostname;
-  return host === "localhost" || host === "127.0.0.1";
+  return host === "localhost" || host === "127.0.0.1" || !host.includes(".");
 }
 
-// Neon's HTTP driver in deployed environments; node-postgres for local dev.
+// node-postgres for local dev and Docker; Neon's HTTP driver everywhere else
+// (deployed environments).
 export function createDb(): Db {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
