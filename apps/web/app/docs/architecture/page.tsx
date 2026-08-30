@@ -4,6 +4,23 @@ import { getSessionUser } from "@/lib/actor";
 
 export const dynamic = "force-dynamic";
 
+const repoTree = `cognition-take-home-project/
+├── apps/
+│   └── web/                 # Next.js host: routes, layouts, API endpoints
+├── packages/
+│   ├── core/                # kernel: defineAction, RBAC, approvals, audit
+│   ├── db/                  # Drizzle schema, migrations, seed
+│   ├── ui/                  # shadcn design system
+│   ├── config/              # ESLint, TS, Tailwind presets
+│   └── apps/                # one package per app, never import each other
+│       ├── kyc/             # schema, actions, screens
+│       ├── refunds/         # schema, actions, screens
+│       └── flags/           # schema, actions, screens
+├── docs/
+│   └── architecture/        # design records, diagrams (D2)
+├── turbo.json               # task pipeline
+└── pnpm-workspace.yaml      # workspace globs`;
+
 export default async function ArchitecturePage() {
   const user = await getSessionUser();
   if (!user) return null;
@@ -22,11 +39,9 @@ export default async function ArchitecturePage() {
           className="w-full rounded-lg border bg-white p-2"
         />
         <h2 className="mt-8 mb-4 text-lg font-semibold">Repository structure</h2>
-        <img
-          src="/docs/architecture/assets/repo-structure.svg"
-          alt="Repository structure diagram"
-          className="w-full rounded-lg border bg-white p-2"
-        />
+        <pre className="bg-muted overflow-x-auto rounded-lg border p-4 font-mono text-sm leading-relaxed">
+          {repoTree}
+        </pre>
       </article>
     </div>
   );
