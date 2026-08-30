@@ -1,0 +1,98 @@
+direction: down
+
+vars: {
+  d2-config: {
+    sketch: false
+    theme-id: 105
+    layout-engine: elk
+  }
+}
+
+classes: {
+  layer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: "#8a8577"
+    }
+  }
+  spacer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: transparent
+    }
+  }
+  group: {
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 24
+      stroke-dash: 3
+    }
+  }
+  module: {
+    style: {
+      fill: "#efe9db"
+      stroke: "#5c5748"
+      border-radius: 6
+    }
+  }
+}
+
+layout: "" {
+  class: layer
+  grid-rows: 4
+  vertical-gap: 100
+
+  web: "apps/web\nNext.js host: routes, layouts, API endpoints" {
+    class: module
+    width: 640
+    height: 90
+  }
+
+  appspkgs: "packages/apps/*  (one package per app)" {
+    class: group
+    grid-columns: 3
+    grid-gap: 30
+
+    kyc: "kyc\nschema, actions,\nscreens" {class: module; width: 260}
+    refunds: "refunds\nschema, actions,\nscreens" {class: module; width: 260}
+    flags: "flags\nschema, actions,\nscreens" {class: module; width: 260}
+  }
+
+  kernel: "Kernel packages" {
+    class: group
+    grid-columns: 4
+    grid-gap: 30
+
+    core: "packages/core\ndefineAction, RBAC,\napprovals, audit" {
+      width: 245
+      style: {
+        fill: "#1c1a16"
+        stroke: "#1c1a16"
+        font-color: "#faf6ec"
+        border-radius: 6
+      }
+    }
+    db: "packages/db\nDrizzle schema,\nmigrations, seed" {class: module; width: 245}
+    ui: "packages/ui\nshadcn design\nsystem" {class: module; width: 245}
+    config: "packages/config\nESLint, TS,\nTailwind presets" {class: module; width: 245}
+  }
+
+  docs: "docs/\narchitecture records, diagrams (D2), house rules" {
+    class: module
+    width: 640
+    height: 90
+    style.stroke-dash: 3
+    style.fill: "#f6f1e7"
+    style.border-radius: 6
+    style.stroke: "#8a8577"
+  }
+
+  web -> appspkgs: mounts screens\nand actions
+  appspkgs -> kernel: "imports @repo/core, db, ui, config\n(apps never import each other)"
+
+  (** -> **)[*].style.font-size: 20
+}

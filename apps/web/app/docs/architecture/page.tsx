@@ -15,9 +15,16 @@ export default async function ArchitecturePage() {
         description="A high-level view of the platform and the services it runs on."
       />
       <article className="bg-card rounded-lg border p-6 shadow-xs md:p-8">
+        <h2 className="mb-4 text-lg font-semibold">Platform overview</h2>
         <img
           src="/docs/architecture/assets/platform-overview.svg"
           alt="Platform architecture diagram"
+          className="w-full rounded-lg border bg-white p-2"
+        />
+        <h2 className="mt-8 mb-4 text-lg font-semibold">Repository structure</h2>
+        <img
+          src="/docs/architecture/assets/repo-structure.svg"
+          alt="Repository structure diagram"
           className="w-full rounded-lg border bg-white p-2"
         />
       </article>
