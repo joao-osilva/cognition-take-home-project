@@ -282,8 +282,8 @@ layout: "" {
   consumers.operators -> auth.clerk: sign in
   auth.clerk -> platform.entry.webwrap.web: session + roles
   consumers.services -> platform.entry.apis.flags: flag reads\nper-consumer API keys
-  platform -> storage.neon: reads /\naudited writes
-  platform -> storage.blob: KYC documents {style.stroke-dash: 3}
+  platform.packages -> storage.neon: reads /\naudited writes
+  platform.entry.webwrap.web -> storage.blob: KYC documents {style.stroke-dash: 3}
   platform.entry.apis -> platform.apps.a1: handled by
   platform.entry.webwrap.web -> platform.apps.a2: handled by
   side.inngest -> platform.entry.apis.jobs: SLA reminders,\nsettlement, digests
