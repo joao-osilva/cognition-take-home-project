@@ -1,0 +1,337 @@
+direction: down
+
+vars: {
+  d2-config: {
+    sketch: false
+    theme-id: 105
+    layout-engine: elk
+  }
+}
+
+classes: {
+  layer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: "#8a8577"
+    }
+  }
+  spacer: {
+    style: {
+      fill: transparent
+      stroke: transparent
+      font-color: transparent
+    }
+  }
+  external: {
+    width: 280
+    height: 110
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 8
+    }
+  }
+  service: {
+    width: 280
+    height: 135
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 8
+    }
+  }
+  band: {
+    height: 130
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 8
+    }
+  }
+  group: {
+    label.near: top-center
+    style: {
+      fill: "#f6f1e7"
+      stroke: "#8a8577"
+      border-radius: 24
+      stroke-dash: 3
+    }
+  }
+  module: {
+    style: {
+      fill: "#efe9db"
+      stroke: "#5c5748"
+      border-radius: 6
+    }
+  }
+}
+
+layout: "" {
+  class: layer
+  grid-rows: 4
+  grid-columns: 3
+  horizontal-gap: 160
+  vertical-gap: 80
+
+  s1: "" {class: spacer}
+  consumers: Consumers {
+    class: layer
+    width: 1468
+    height: 230
+    grid-columns: 4
+    grid-gap: 20
+
+    services: Product services\nread feature flags {
+      class: external
+      style.multiple: true
+    }
+    cmid: "" {
+      class: spacer
+      width: 310
+      height: 110
+    }
+    operators: Ops team\noperators, approvers, admins {
+      class: external
+    }
+    cgap: "" {
+      class: spacer
+      width: 70
+      height: 110
+    }
+  }
+  s2: "" {class: spacer}
+
+  s3: "" {class: spacer}
+  auth: "" {
+    class: layer
+    width: 1468
+    height: 255
+    grid-columns: 2
+    grid-gap: 120
+
+    agap: "" {
+      class: spacer
+      width: 420
+      height: 120
+    }
+    clerk: Clerk\nauthentication, roles {
+      class: service
+      height: 120
+      icon: ./icons/clerk.svg
+      icon.near: bottom-center
+    }
+  }
+  s4: "" {class: spacer}
+
+  side: "" {
+    class: layer
+    grid-rows: 2
+    grid-gap: 0
+
+    sgap: "" {
+      class: spacer
+      width: 280
+      height: 298
+    }
+    inngest: Inngest\nbackground jobs {
+      class: service
+      icon: ./icons/inngest.png
+      icon.near: bottom-center
+    }
+  }
+  platform: "Internal tools platform" {
+    grid-rows: 4
+    grid-gap: 28
+    label.near: top-center
+    style: {
+      fill: "#fdfaf3"
+      stroke: "#5c5748"
+      border-radius: 12
+    }
+    icon: ./icons/nextjs.svg
+
+    label: "Internal tools platform\nNext.js on Vercel"
+
+    entry: "" {
+      class: layer
+      height: 365
+      grid-columns: 2
+      grid-gap: 120
+
+      apis: API {
+        class: group
+        grid-rows: 2
+        grid-columns: 2
+        grid-gap: 30
+
+        flags: "GET /api/flags\nREST, API-key auth" {
+          class: module
+          width: 280
+        }
+
+        agap1: "" {
+          class: spacer
+          width: 40
+          height: 70
+        }
+        jobs: "POST /api/inngest\nfunction invocations" {
+          class: module
+          width: 280
+        }
+      }
+      webwrap: "" {
+        class: layer
+        grid-rows: 1
+        grid-columns: 2
+        grid-gap: 0
+
+        wgap: "" {
+          class: spacer
+          width: 140
+          height: 70
+        }
+
+        web: App routes\nserver actions {
+          class: module
+          width: 280
+          height: 70
+        }
+      }
+    }
+
+    pgap: "" {
+      class: spacer
+      height: 40
+    }
+
+    apps: Apps {
+      class: group
+      grid-rows: 2
+      grid-columns: 5
+      horizontal-gap: 20
+      vertical-gap: 4
+
+      t1: "" {class: spacer; width: 144; height: 2}
+      a1: "" {class: spacer; width: 282; height: 2}
+      t2: "" {class: spacer; width: 282; height: 2}
+      a2: "" {class: spacer; width: 282; height: 2}
+      t3: "" {class: spacer; width: 16; height: 2}
+
+      lgap: "" {class: spacer; width: 144; height: 60}
+      kyc: KYC review {class: module; width: 282}
+      refunds: Refunds {class: module; width: 282}
+      flags: Feature flags {class: module; width: 282}
+      rgap: "" {class: spacer; width: 16; height: 60}
+    }
+
+    packages: Packages {
+      class: group
+      grid-columns: 4
+      grid-gap: 30
+
+      core: "@repo/core\nRBAC, approvals,\naudit, notifications" {
+        width: 245
+        style: {
+          fill: "#1c1a16"
+          stroke: "#1c1a16"
+          font-color: "#faf6ec"
+          border-radius: 6
+        }
+      }
+      db: "@repo/db\nDrizzle schema" {class: module; width: 245}
+      ui: "@repo/ui\ndesign system" {class: module; width: 245}
+      config: "@repo/config\nshared tooling" {class: module; width: 245}
+    }
+  }
+  storage: Storage {
+    class: layer
+    grid-rows: 4
+    vertical-gap: 0
+
+    tsp: "" {class: spacer; width: 320; height: 120}
+
+    blob: Vercel Blob\nprivate KYC documents {
+      class: service
+      icon: ./icons/vercel.svg
+      icon.near: bottom-center
+    }
+
+    msp: "" {class: spacer; width: 320; height: 354}
+
+    neon: Neon Postgres\ndomain + audit + platform tables {
+      shape: cylinder
+      width: 320
+      height: 200
+      label.near: top-center
+      style: {
+        fill: "#efe9db"
+        stroke: "#5c5748"
+      }
+      icon: ./icons/neon.svg
+      icon.near: bottom-center
+    }
+  }
+
+  # invisible elbow: the dot sits under Inngest so the deploy edge leaves the
+  # CI/CD band horizontally and turns 90 degrees up.
+  s5: "" {
+    class: spacer
+    grid-columns: 3
+    grid-gap: 0
+    p1: "" {class: spacer; width: 137; height: 130}
+    dot: "" {
+      class: spacer
+      grid-rows: 2
+      grid-gap: 0
+      up: "" {class: spacer; width: 6; height: 63}
+      d: "" {class: spacer; width: 6; height: 4}
+    }
+    p2: "" {class: spacer; width: 137; height: 130}
+  }
+  github: GitHub\ncode, CI/CD {
+    class: band
+    icon: ./icons/github.svg
+    icon.near: bottom-center
+  }
+  s6: "" {
+    class: spacer
+    grid-columns: 3
+    grid-gap: 0
+    p1: "" {class: spacer; width: 214; height: 130}
+    dot: "" {
+      class: spacer
+      grid-rows: 2
+      grid-gap: 0
+      up: "" {class: spacer; width: 6; height: 63}
+      d: "" {class: spacer; width: 6; height: 4}
+    }
+    p2: "" {class: spacer; width: 100; height: 130}
+  }
+
+  consumers.operators -> auth.clerk: sign in
+  auth.clerk -> platform.entry.webwrap.web: session + roles
+  consumers.services -> platform.entry.apis.flags: flag reads\nper-consumer API keys
+  platform.packages -> storage.neon: reads /\naudited writes
+  platform.entry.webwrap.web -> storage.blob: KYC documents {style.stroke-dash: 3}
+  platform.entry.apis -> platform.apps.a1: handled by
+  platform.entry.webwrap.web -> platform.apps.a2: handled by
+  side.inngest <-> platform.entry.apis.jobs: events out,\nfunction runs back
+  github -> platform: deploys\nvia Vercel {style.stroke-dash: 3}
+  # deploy-time side effects: leave the CI/CD band sideways, then turn 90°
+  # into Neon / Inngest via invisible corner nodes.
+  github -> s6.dot.d: runs migrations\non deploy {
+    style.stroke-dash: 3
+    target-arrowhead: {shape: none}
+  }
+  s6.dot.d -> storage.neon: {style.stroke-dash: 3}
+  github -> s5.dot.d: syncs functions\non deploy {
+    style.stroke-dash: 3
+    target-arrowhead: {shape: none}
+  }
+  s5.dot.d -> side.inngest: {style.stroke-dash: 3}
+
+  (** -> **)[*].style.font-size: 20
+}

@@ -4,32 +4,7 @@ _Context: a fintech engineering team building internal tools. The goal is not "3
 
 ## Component map
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Web UI (SPA or SSR)                    │
-│   Shared shell: nav, auth session, role-aware rendering       │
-│  ┌────────────┐  ┌───────────────┐  ┌──────────────────┐     │
-│  │ KYC Queue  │  │ Refunds Dash  │  │ Feature-Flag Admin│     │
-│  └────────────┘  └───────────────┘  └──────────────────┘     │
-└──────────────────────────┬────────────────────────────────────┘
-                           │ HTTPS / JSON
-┌──────────────────────────┴────────────────────────────────────┐
-│                       API layer (single service)               │
-│  AuthN (OIDC) │ AuthZ (RBAC middleware) │ Validation            │
-│  ┌──────────────────┐ ┌──────────────────┐ ┌────────────────┐  │
-│  │ Domain modules    │ │ Approval engine  │ │ Audit writer   │  │
-│  │ (kyc/refunds/flags)│ │ (state machine) │ │ (append-only)  │  │
-│  └──────────────────┘ └──────────────────┘ └────────────────┘  │
-│                         │ Notification dispatcher (email/Slack)│
-└──────────────────────────┬────────────────────────────────────┘
-                           │
-                ┌──────────┴──────────┐
-                │  PostgreSQL          │
-                │  domain tables +     │
-                │  audit_log (append-  │
-                │  only) + users/roles │
-                └─────────────────────┘
-```
+The high-level platform diagram lives in `platform-overview.d2` (rendered to `platform-overview.svg`, shown on the in-app Architecture page). Regenerate the SVG with `d2 platform-overview.d2 platform-overview.svg` after editing it, and the PNG (used by the downloadable PDF) with `rsvg-convert -w 2200 platform-overview.svg -o platform-overview.png`.
 
 ## 1. Identity & authentication (replaces: Entra ID integration)
 
