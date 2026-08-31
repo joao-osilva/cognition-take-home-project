@@ -53,7 +53,7 @@ function ArchitecturePdf({ diagram }: { diagram: Buffer }) {
           </View>
         ))}
         <View>
-          <Text style={styles.heading}>Platform overview</Text>
+          <Text style={styles.heading}>Architecture diagram</Text>
           <Image src={{ data: diagram, format: "png" }} style={styles.diagram} />
         </View>
         <View wrap={false}>

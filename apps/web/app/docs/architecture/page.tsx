@@ -39,7 +39,7 @@ export default async function ArchitecturePage() {
             </section>
           ))}
         </div>
-        <h2 className="mt-8 mb-4 text-lg font-semibold">Platform overview</h2>
+        <h2 className="mt-8 mb-4 text-lg font-semibold">Architecture diagram</h2>
         <img
           src="/docs/architecture/assets/platform-overview.svg"
           alt="Platform architecture diagram"
