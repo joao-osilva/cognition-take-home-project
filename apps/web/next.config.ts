@@ -5,9 +5,14 @@ const nextConfig: NextConfig = {
     // The design-records docs page reads these markdown files at request time.
     "/docs/tbd": ["../../docs/architecture/*.md"],
     "/docs/architecture/assets/[name]": ["../../docs/architecture/*.svg"],
-    "/docs/architecture/pdf": ["../../docs/architecture/*.png"],
+    "/docs/architecture/pdf": [
+      "../../docs/architecture/*.png",
+      // pdfkit lazy-requires its standard-font data files at render time,
+      // so the tracer misses them.
+      "../../node_modules/.pnpm/pdfkit@*/node_modules/pdfkit/js/standard-fonts/*",
+    ],
   },
-  // Keep react-pdf unbundled so pdfkit's runtime font data files (*.afm)
+  // Keep react-pdf unbundled so pdfkit's runtime font data files
   // are traced into the serverless function instead of breaking on ENOENT.
   serverExternalPackages: ["@react-pdf/renderer"],
   transpilePackages: [
