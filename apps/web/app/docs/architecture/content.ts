@@ -15,7 +15,7 @@ export const overviewSections: OverviewSection[] = [
     title: "Stack",
     paragraphs: [
       "The stack uses Vercel as central point, not only for deploying the Next.js project but also managing the integrations with Neon (serverless Postgres), Inngest (durable workflows) and Blob storage. Migrations run and Inngest functions re-sync as part of each deploy, so there is no separate release orchestration needed.",
-      "For authn/authz I'm using Clerk, which gives social login and user management out of the box. I created custom roles per app in Clerk's user metadata, and mirror users into a local table via webhook so queries can join against them. Clerk supplies identity and role claims, but the per-app RBAC enforcement is ours, in the platform kernel.",
+      "For authn/authz I'm using Clerk, which gives social login and user management out of the box. I created custom roles per app in Clerk's user metadata.",
     ],
   },
   {
