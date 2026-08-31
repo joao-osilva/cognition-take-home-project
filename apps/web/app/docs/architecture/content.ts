@@ -19,7 +19,7 @@ export const overviewSections: OverviewSection[] = [
     ],
   },
   {
-    title: "Monorepo",
+    title: "Repo structure",
     paragraphs: [
       "I'm using a monorepo with Turbo, a single web app (with routes per app) and packages for each individual app (kyc, refunds, flags) to encapsulate domain logic, plus core platform packages used across all of them (ui, db, core, config). App packages never import each other. If two apps need the same entity it gets promoted to the shared data layer.",
       "I considered one deployable per app, closer to how Power Apps isolates things, but that would increase complexity (N pipelines, N auth setups, N places to patch). The single host means a bad deploy touches every app, but for internal tools that's an inconvenience, not a customer incident, and preview deployments per PR (thanks to Vercel) catch most of it.",
@@ -32,17 +32,17 @@ export const overviewSections: OverviewSection[] = [
     ],
   },
   {
-    title: "The kernel",
+    title: "Platform core",
     paragraphs: [
-      "The apps are basically screens plus operations that change state (claim a kyc case, request a refund, toggle a flag). Instead of each app implementing its own checks, every operation goes through a single helper in the core package, defineAction(): it checks who you are and your role, validates the input, runs the app's logic and writes the audit log. With multiple apps (and more coming) I didn't want auth, permissions and audit reimplemented per app, each slightly different. Apps also can't write to the platform tables directly, so there's no way to change state without leaving an audit trail.",
-      "The kernel also owns the approval engine, since every app needed one (granting refunds, escalating kyc cases, enabling flags in production). One person requests, a different person approves, never their own request. Each app defines its approval policy in code and the engine enforces it, so it can't be bypassed by a different screen or client. Approvals snapshot the config values used at the time (e.g. the refund threshold) and every decision lands in the audit log, so an auditor can see who did what, when, and under which rules.",
+      "The apps are basically screens plus operations that change state (claim a kyc case, request a refund, toggle a flag). Instead of each app implementing its own checks, every operation goes through a single helper in the core package, that checks who you are and your role, validates the input, runs the app's logic and writes the audit log. That way is consistent across apps.",
+      "There is also an approval engine, since every app needed one (granting refunds, escalating kyc cases, enabling flags in production). Each app defines its approval policy in code and the engine enforces it. Every approval lands in the audit log, so it can be audited later.",
     ],
   },
   {
-    title: "What I didn't replicate",
+    title: "Known gaps",
     paragraphs: [
       "I didn't try to replicate the no-code builder nature of Power Apps. It would be a significant additional effort (infrastructure to deploy and run user-authored apps, isolation and security concerns, a runtime to maintain), and mostly because creating a new sub-app inside this monorepo is standardized enough that Devin can extend the platform from existing patterns, like scaffold generator, fixed package boundaries, the kernel pipeline, house rules in the repo.",
-      "Any user, technical or not, can explain their requirements in detail and ask Devin to plan and implement the app as reviewable code, under the same compliance guarantees as everything else, and with the preview environment on every PR, they can assess before pushing anything to prod.",
+      "Any user, technical or not, can explain their requirements in detail and ask Devin to plan and implement the app as reviewable code, and with the preview environment on every PR, they can assess before pushing anything to prod.",
     ],
   },
 ];
