@@ -84,22 +84,13 @@ export async function GET() {
     notFound();
   }
 
-  // TODO(debug): temporary error surface while diagnosing a Vercel-only 500.
-  try {
-    const pdf = await renderToBuffer(<ArchitecturePdf diagram={diagram} />);
+  const pdf = await renderToBuffer(<ArchitecturePdf diagram={diagram} />);
 
-    return new NextResponse(new Uint8Array(pdf), {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="architecture-overview.pdf"',
-        "Cache-Control": "private, max-age=300",
-      },
-    });
-  } catch (error) {
-    const detail = error instanceof Error ? `${error.message}\n${error.stack}` : String(error);
-    return new NextResponse(`pdf render failed: ${detail}`, {
-      status: 500,
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
+  return new NextResponse(new Uint8Array(pdf), {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="architecture-overview.pdf"',
+      "Cache-Control": "private, max-age=300",
+    },
+  });
 }
