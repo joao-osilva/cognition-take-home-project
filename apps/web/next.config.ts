@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     "/docs/architecture/assets/[name]": ["../../docs/architecture/*.svg"],
     "/docs/architecture/pdf": ["../../docs/architecture/*.png"],
   },
+  // Keep react-pdf unbundled so pdfkit's runtime font data files (*.afm)
+  // are traced into the serverless function instead of breaking on ENOENT.
+  serverExternalPackages: ["@react-pdf/renderer"],
   transpilePackages: [
     "@repo/ui",
     "@repo/core",
