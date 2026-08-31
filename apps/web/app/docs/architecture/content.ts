@@ -58,7 +58,13 @@ export const repoTree = `cognition-take-home-project/
 │       ├── kyc/             # schema, actions, screens
 │       ├── refunds/         # schema, actions, screens
 │       └── flags/           # schema, actions, screens
+├── tooling/
+│   └── generators/          # gen:app scaffold for new app packages
 ├── docs/
-│   └── architecture/        # design records, diagrams (D2)
+│   ├── architecture/        # design records, diagrams (D2)
+│   └── research/            # Power Apps research, functional requirements
+├── AGENTS.md                # house rules every change must follow
+├── Dockerfile               # web app image for local Docker setup
+├── docker-compose.yml       # Postgres + web + Inngest dev server
 ├── turbo.json               # task pipeline
 └── pnpm-workspace.yaml      # workspace globs`;
