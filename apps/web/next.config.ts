@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    // The design-records docs page reads these markdown files at request time.
-    "/docs/tbd": ["../../docs/architecture/*.md"],
     "/docs/architecture/assets/[name]": ["../../docs/architecture/*.svg"],
     "/docs/architecture/pdf": [
       "../../docs/architecture/*.png",

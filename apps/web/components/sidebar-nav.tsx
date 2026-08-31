@@ -2,7 +2,6 @@
 
 import {
   BookOpen,
-  FileText,
   Flag,
   Inbox,
   Receipt,
@@ -36,7 +35,6 @@ const ICONS: Record<string, LucideIcon> = {
   audit: ScrollText,
   admin: Settings,
   architecture: BookOpen,
-  tbd: FileText,
 };
 
 export function SidebarNav({
