@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       "../../docs/architecture/*.png",
       // pdfkit lazy-requires its standard-font data files at render time,
       // so the tracer misses them.
-      "../../node_modules/.pnpm/pdfkit@*/node_modules/pdfkit/js/standard-fonts/*",
+      "../../node_modules/.pnpm/pdfkit@*/node_modules/pdfkit/js/**",
     ],
   },
   // Keep react-pdf unbundled so pdfkit's runtime font data files
