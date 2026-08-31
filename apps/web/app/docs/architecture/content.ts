@@ -21,8 +21,8 @@ export const overviewSections: OverviewSection[] = [
   {
     title: "Repo structure",
     paragraphs: [
-      "I'm using a monorepo with Turbo, a single web app (with routes per app) and packages for each individual app (kyc, refunds, flags) to encapsulate domain logic, plus core platform packages used across all of them (ui, db, core, config). App packages never import each other. If two apps need the same entity it gets promoted to the shared data layer.",
-      "I considered one deployable per app, closer to how Power Apps isolates things, but that would increase complexity (N pipelines, N auth setups, N places to patch). The single host means a bad deploy touches every app, but for internal tools that's an inconvenience, not a customer incident, and preview deployments per PR (thanks to Vercel) catch most of it.",
+      "I'm using a monorepo with Turbo, a single web app (with routes per app) and packages for each individual app (kyc, refunds, flags) to encapsulate domain logic, plus core platform packages used across all of them (ui, db, core, config).",
+      "I considered one deployable per app, closer to how Power Apps isolates things, but that would increase complexity (N pipelines, N auth setups, N places to patch). The single host means a bad deploy touches every app, but for internal tools that's an inconvenience and preview deployments per PR (thanks to Vercel) catch most of it.",
     ],
   },
   {
@@ -41,8 +41,7 @@ export const overviewSections: OverviewSection[] = [
   {
     title: "Known gaps",
     paragraphs: [
-      "I didn't try to replicate the no-code builder nature of Power Apps. It would be a significant additional effort (infrastructure to deploy and run user-authored apps, isolation and security concerns, a runtime to maintain), and mostly because creating a new sub-app inside this monorepo is standardized enough that Devin can extend the platform from existing patterns, like scaffold generator, fixed package boundaries, the kernel pipeline, house rules in the repo.",
-      "Any user, technical or not, can explain their requirements in detail and ask Devin to plan and implement the app as reviewable code, and with the preview environment on every PR, they can assess before pushing anything to prod.",
+      "I didn't try to replicate the no-code builder nature of Power Apps. It would be a significant additional effort (infrastructure to deploy and run user-authored apps, isolation and security concerns, a runtime to maintain), and mostly because creating a new sub-app inside this monorepo is standardized enough that Devin can extend the platform from existing patterns, like scaffold generator, fixed package boundaries, house rules in the repo.",
     ],
   },
 ];
