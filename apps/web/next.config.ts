@@ -2,9 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    // The architecture docs page reads these markdown files at request time.
-    "/docs/architecture": ["../../docs/architecture/*.md"],
+    "/docs/architecture/assets/[name]": ["../../docs/architecture/*.svg"],
+    "/docs/architecture/pdf": [
+      "../../docs/architecture/*.png",
+      // pdfkit lazy-requires its standard-font data files at render time,
+      // so the tracer misses them.
+      "../../node_modules/.pnpm/pdfkit@*/node_modules/pdfkit/js/**",
+    ],
   },
+  // Keep react-pdf unbundled so pdfkit's runtime font data files
+  // are traced into the serverless function instead of breaking on ENOENT.
+  serverExternalPackages: ["@react-pdf/renderer"],
   transpilePackages: [
     "@repo/ui",
     "@repo/core",
