@@ -76,7 +76,11 @@ export async function decideApproval<T extends ApprovableEntity>(
   if (!entity) throw new Error(`Entity ${approval.entityId} not found`);
 
   if (!policy.canDecide(actor, entity, approval.requestedBy)) {
-    throw new ForbiddenError(`Actor ${actor.id} cannot decide this approval`);
+    throw new ForbiddenError(
+      actor.id === approval.requestedBy
+        ? "You requested this item, so a different approver has to decide it (two-person rule)."
+        : "You do not have permission to decide this approval.",
+    );
   }
 
   await db

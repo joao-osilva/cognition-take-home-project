@@ -34,6 +34,7 @@ export function RefundsDashboardScreen({
   requestedBy,
   customer,
   requesters,
+  actorId,
   canRequest,
   canDecide,
   onRequest,
@@ -47,6 +48,7 @@ export function RefundsDashboardScreen({
   requestedBy?: string;
   customer?: string;
   requesters: RefundRequester[];
+  actorId: string;
   canRequest: boolean;
   canDecide: boolean;
   onRequest: (transactionId: string, amountCents: number, reason: string) => Promise<ActionResult>;
@@ -139,7 +141,12 @@ export function RefundsDashboardScreen({
         ) : null}
       </div>
       {detail ? (
-        <RefundDetailDialog detail={detail} canDecide={canDecide} onDecide={onDecide} />
+        <RefundDetailDialog
+          detail={detail}
+          actorId={actorId}
+          canDecide={canDecide}
+          onDecide={onDecide}
+        />
       ) : null}
     </div>
   );
