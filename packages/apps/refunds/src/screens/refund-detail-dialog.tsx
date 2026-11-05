@@ -22,10 +22,12 @@ import { RefundDecision } from "./refund-decision";
 
 export function RefundDetailDialog({
   detail,
+  actorId,
   canDecide,
   onDecide,
 }: {
   detail: RefundDetail;
+  actorId: string;
   canDecide: boolean;
   onDecide: (
     approvalId: string,
@@ -82,7 +84,11 @@ export function RefundDetailDialog({
           </Row>
         </div>
         {canDecide && detail.approvalId && refund.status === "pending_approval" ? (
-          <RefundDecision approvalId={detail.approvalId} onDecide={onDecide} />
+          <RefundDecision
+            approvalId={detail.approvalId}
+            isRequester={refund.requestedBy === actorId}
+            onDecide={onDecide}
+          />
         ) : null}
         <Separator />
         <div>

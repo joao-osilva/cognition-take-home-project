@@ -57,6 +57,7 @@ export default async function RefundsPage({
         requestedBy={requestedBy}
         customer={customer}
         requesters={requesters}
+        actorId={actor.id}
         canRequest={hasRole(actor, "refunds:operator")}
         canDecide={hasRole(actor, "refunds:approver")}
         onRequest={requestRefundAction}

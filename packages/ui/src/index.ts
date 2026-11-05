@@ -10,6 +10,7 @@ export {
 } from "./components/card";
 export {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,

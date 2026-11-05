@@ -24,6 +24,7 @@ export const refundApprovalPolicy = definePolicy<RefundRequest>({
 
 - `requestApproval(tx, policy, entity, actor)` — creates the `approvals` row with a `rule_snapshot` (e.g. the threshold value at request time), moves the entity to its pending state, notifies eligible approvers.
 - `decideApproval(tx, policy, approvalId, actor, decision, reason)` — enforces `canDecide`, records the decision, runs the domain hook, writes audit entries, notifies the requester.
+- When `canDecide` rejects, the engine throws a `ForbiddenError` with a user-facing message that names the two-person rule when the actor is the requester. App UIs mirror the rule up front: a requester viewing their own pending refund sees an "Awaiting a second approver" notice and a blocking explanation instead of a working Approve button (the server check stays authoritative).
 - Everything happens in **one DB transaction** — approval row, entity state change, audit log, and notification rows commit or roll back together.
 
 ## Configuration
