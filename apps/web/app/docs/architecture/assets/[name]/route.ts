@@ -26,7 +26,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ nam
   return new NextResponse(new Uint8Array(body), {
     headers: {
       "Content-Type": "image/svg+xml",
-      "Cache-Control": "private, max-age=300",
+      "Cache-Control": "private, no-store",
     },
   });
 }

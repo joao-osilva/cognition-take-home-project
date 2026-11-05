@@ -90,7 +90,7 @@ export async function GET() {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="architecture-overview.pdf"',
-      "Cache-Control": "private, max-age=300",
+      "Cache-Control": "private, no-store",
     },
   });
 }
